@@ -84,10 +84,11 @@
       case "mandala": return !!(v && (v.center || (v.cells && v.cells.some(function (c) { return c; }))));
       case "sliders": return !!(v && Object.keys(v).length);
       case "dailyLog": return !!(v && v.some(function (d) { return Object.keys(d).some(function (k) { return d[k] && String(d[k]).trim(); }); }));
+      case "reframe": return !!(v && (v.resonate || v.doubt || v.mine));
       default: return false;
     }
   }
-  function inputSteps(week) { return week.steps.filter(function (s) { return s.type !== "intro"; }); }
+  function inputSteps(week) { return week.steps.filter(function (s) { return s.type !== "intro" && s.type !== "promptForge"; }); }
 
   /* ---------- 레이더 ---------- */
   function ring(n, cx, cy, r) {
@@ -196,6 +197,48 @@
       '<h4>이야기할 거리</h4><ul>' + d + "</ul>" +
       '<h4>함께 하는 액티비티</h4><ul>' + a + "</ul></div>";
   }
+  function fmtAny(id) {
+    var v = A[id];
+    if (v == null) return "";
+    if (typeof v === "string") return v;
+    if (v.picked !== undefined) return fmtChoices(id);
+    if (v.l2 !== undefined) { var pick = (v.l2 && v.l2.length) ? v.l2 : (v.l1 || []); return pick.join(", "); }
+    if (v.center !== undefined) return [v.center].concat(v.cells || []).filter(function (x) { return x; }).join(" / ");
+    if (v.mine !== undefined) return v.mine || "";
+    if (typeof v === "object") return Object.keys(v).map(function (k) { return k + " " + v[k]; }).join(", ");
+    return "";
+  }
+  function buildPrompt(s) {
+    var lines = s.collect.map(function (c) { var val = fmtAny(c.from); return "- " + c.label + ": " + (val && val.trim() ? val : "(아직 안 씀)"); });
+    return s.system + "\n\n[내 기록]\n" + lines.join("\n");
+  }
+  function compPromptForge(s) {
+    var intro = s.intro ? '<p class="hint">' + esc(s.intro) + "</p>" : "";
+    return intro +
+      '<textarea class="promptbox" rows="10" readonly>' + esc(buildPrompt(s)) + "</textarea>" +
+      '<div class="rowbtn"><button class="btn" onclick="copyPrompt(this)">프롬프트 복사</button> ' +
+      '<a class="btn ghost" href="https://claude.ai/new" target="_blank" rel="noopener">Claude 열기</a> ' +
+      '<a class="btn ghost" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT 열기</a></div>';
+  }
+  function reframe(id) { if (!A[id]) A[id] = { resonate: "", doubt: "", mine: "" }; return A[id]; }
+  window.setReframe = function (id, k, v) { reframe(id)[k] = v; save(); };
+  window.copyPrompt = function (btn) {
+    var ta = btn.parentNode.parentNode.querySelector(".promptbox");
+    if (!ta) return;
+    var orig = btn.textContent;
+    var done = function () { btn.textContent = "복사됐어요 ✓"; setTimeout(function () { btn.textContent = orig; }, 1500); };
+    try { ta.select(); } catch (e) {}
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(ta.value).then(done, done); }
+    else { try { document.execCommand("copy"); } catch (e) {} done(); }
+  };
+  function compReframe(s) {
+    var v = A[s.id] || {};
+    var hint = s.hint ? '<p class="hint">' + esc(s.hint) + "</p>" : "";
+    return hint +
+      '<label class="rfield"><span>AI 답에서 가장 와닿은 것</span><textarea rows="3" oninput="setReframe(\'' + s.id + '\',\'resonate\',this.value)">' + esc(v.resonate || "") + "</textarea></label>" +
+      '<label class="rfield"><span>갸우뚱하거나 동의 안 되는 것</span><textarea rows="2" oninput="setReframe(\'' + s.id + '\',\'doubt\',this.value)">' + esc(v.doubt || "") + "</textarea></label>" +
+      '<label class="rfield"><span>그래서, 내 언어로 다시 쓴 요약</span><textarea rows="4" oninput="setReframe(\'' + s.id + '\',\'mine\',this.value)">' + esc(v.mine || "") + "</textarea></label>";
+  }
 
   /* ---------- 화면 ---------- */
   function renderHome() {
@@ -236,6 +279,8 @@
       case "sliders": body = compSliders(s); break;
       case "dailyLog": body = compLog(s); break;
       case "meetup": body = compMeetup(s.meetup); break;
+      case "promptForge": body = compPromptForge(s); break;
+      case "reframe": body = compReframe(s); break;
       default: body = "";
     }
     var pct = Math.round((CUR.idx + 1) / list.length * 100);
@@ -282,7 +327,7 @@
     var html =
       '<section class="book">' +
       '<div class="noprint bookbar"><a class="btn ghost" href="#home">← 홈</a><button class="btn" onclick="window.print()">PDF로 저장 / 인쇄</button></div>' +
-      '<div class="cover"><div class="covertag">나를 파는 3개월</div><h1>' + esc(title) + '</h1><p class="byline">' + esc(author) + " 지음</p></div>" +
+      '<div class="cover"><div class="covertag">' + esc(COURSE.title) + '</div><h1>' + esc(title) + '</h1><p class="byline">' + esc(author) + " 지음</p></div>" +
 
       '<div class="chapter"><div class="chno">서문</div><h2>나는 왜 이 책을 쓰는가</h2>' +
       bookBlock("이 책을 시작하는 지금의 나는,", A.w1_start_mind) +
@@ -302,12 +347,14 @@
       bookBlock("나를 관통하는 가치 5", vals5) +
       bookBlock("남들은 어려운데 나는 쉬운 일", A.w3_easy) +
       bookBlock("사람들이 고마워하는 것", A.w3_thank) +
-      bookBlock("내가 잘 되는 환경", fmtChoices("w3_env")) + "</div>" +
+      bookBlock("내가 잘 되는 환경", fmtChoices("w3_env")) +
+      bookBlock("AI와 곱씹어 다시 쓴 1부", (A.w3_reframe && A.w3_reframe.mine) || "") + "</div>" +
 
       '<div class="chapter"><div class="chno">2부</div><h2>나의 현재 지도</h2>' +
       '<div class="bq"><h4>지금 내 삶의 영역</h4><svg class="radar" viewBox="0 0 220 220">' + radarInner(areaItems, radarVals) + "</svg></div>" +
       bookBlock("각 영역, 지금 한 줄", A.w4_area_note) +
-      '<div class="bq"><h4>채우고 싶은 영역 만다라트</h4>' + bookMandala("w4_mandala") + "</div></div>" +
+      '<div class="bq"><h4>채우고 싶은 영역 만다라트</h4>' + bookMandala("w4_mandala") + "</div>" +
+      bookBlock("AI와 곱씹어 다시 쓴 2부", (A.w4_reframe && A.w4_reframe.mine) || "") + "</div>" +
 
       '<div class="chapter future"><div class="chno">3부 · 4부 · 맺음</div><h2>다음 달에 채워집니다</h2>' +
       '<p class="empty">내가 원하는 것 · 나의 실험 · 다음 1년의 나에게</p></div>' +

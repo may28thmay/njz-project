@@ -127,6 +127,7 @@
       case "sliders": return !!(v && Object.keys(v).length);
       case "dailyLog": return !!(v && v.some(function (d) { return Object.keys(d).some(function (k) { return d[k] && String(d[k]).trim(); }); }));
       case "reframe": return !!(v && (v.resonate || v.doubt || v.mine));
+      case "digest": return !!(v && Object.keys(v).some(function (k) { return v[k] && String(v[k]).trim(); }));
       case "journey": return !!(v && ((v.v && v.v.some(function (x) { return x; })) || v.where || v.surprise));
       case "commit": return !!(v && (v.what || v.why));
       case "progress": return !!(v && (v.done || v.note));
@@ -311,6 +312,25 @@
       '<label class="rfield"><span>갸우뚱하거나 동의 안 되는 것</span><textarea rows="2" oninput="setReframe(\'' + s.id + '\',\'doubt\',this.value)">' + esc(v.doubt || "") + "</textarea></label>" +
       '<label class="rfield"><span>그래서, 내 언어로 다시 쓴 요약</span><textarea rows="4" oninput="setReframe(\'' + s.id + '\',\'mine\',this.value)">' + esc(v.mine || "") + "</textarea></label>";
   }
+  function digestData(id) { if (!A[id]) A[id] = { mine: "" }; return A[id]; }
+  window.setDigest = function (id, k, v) { digestData(id)[k] = v; save(); };
+  function compDigest(s) {
+    var d = digestData(s.id);
+    var head = (s.intro ? '<p class="hint">' + esc(s.intro) + "</p>" : "") + (s.hint ? '<p class="hint">' + esc(s.hint) + "</p>" : "");
+    var cards = (s.sections || []).map(function (sec) {
+      return '<label class="rfield"><span>' + esc(sec.label) + (sec.optional ? " · 원하면" : "") + "</span>" +
+        (sec.hint ? '<small class="subhint">' + esc(sec.hint) + "</small>" : "") +
+        '<textarea rows="2" oninput="setDigest(\'' + s.id + "','" + sec.key + '\',this.value)">' + esc(d[sec.key] || "") + "</textarea></label>";
+    }).join("");
+    var o = s.overall || {};
+    var overall = '<div class="digestall">' + (o.intro ? '<p class="hint">' + esc(o.intro) + "</p>" : "") +
+      '<label class="rfield"><span>' + esc(o.resonateLabel || "가장 와닿은 것") + '</span><textarea rows="2" oninput="setDigest(\'' + s.id + '\',\'resonate\',this.value)">' + esc(d.resonate || "") + "</textarea></label>" +
+      '<label class="rfield"><span>' + esc(o.doubtLabel || "갸우뚱하거나 동의 안 되는 것") + '</span><textarea rows="2" oninput="setDigest(\'' + s.id + '\',\'doubt\',this.value)">' + esc(d.doubt || "") + "</textarea></label>" +
+      '<label class="rfield"><span>' + esc(o.mineLabel || "내 언어로 다시 쓴 한 문장") + "</span>" +
+        (o.mineHint ? '<small class="subhint">' + esc(o.mineHint) + "</small>" : "") +
+        '<textarea rows="3" oninput="setDigest(\'' + s.id + '\',\'mine\',this.value)">' + esc(d.mine || "") + "</textarea></label></div>";
+    return head + cards + overall;
+  }
   function journey(id) { if (!A[id]) A[id] = { v: ["", "", "", "", ""], where: "", surprise: "" }; return A[id]; }
   window.setJourneyVal = function (id, i, val) { journey(id).v[i] = val; save(); };
   window.setJourneyField = function (id, k, val) { journey(id)[k] = val; save(); };
@@ -487,6 +507,7 @@
       case "meetup": body = compMeetup(s.meetup); break;
       case "promptForge": body = compPromptForge(s); break;
       case "reframe": body = compReframe(s); break;
+      case "digest": body = compDigest(s); break;
       case "journey": body = compJourney(s); break;
       case "commit": body = compCommit(s); break;
       case "progress": body = compProgress(s); break;
@@ -580,7 +601,12 @@
       bookBlock("금방 흩어질 때", fmtChoices("w2_focus_break")) +
       bookBlock("시간 가는 줄 모르고 빠져드는 일", A.w2_flow) +
       bookBlock("에너지가 가장 좋은 시간대", fmtChoices("w2_energy_peak")) +
-      bookBlock("충전되는 것 / 방전되는 것", A.w2_recharge) +
+      bookBlock("나를 움직이는 상황", fmtChoices("w2_drive")) +
+      bookBlock("절대 안 움직이는 상황", fmtChoices("w2_never")) +
+      bookBlock("충전되는 것", fmtChoices("w2_recharge_plus")) +
+      bookBlock("방전되는 것", fmtChoices("w2_recharge_minus")) +
+      bookBlock("일을 처리하는 나다운 방식", fmtChoices("w2_work_style")) +
+      bookBlock("잘 되는 환경", fmtChoices("w2_env_setup")) +
       bookBlock("AI와 곱씹어 다시 쓴 작동방식", (A.w2_reframe && A.w2_reframe.mine) || "") + "</div>" +
 
       '<div class="chapter ch3">' + chapHead("", "나의 강점 지도", STK.star) +

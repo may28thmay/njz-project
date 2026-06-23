@@ -89,6 +89,8 @@
       case "commit": return !!(v && (v.what || v.why));
       case "progress": return !!(v && (v.done || v.note));
       case "manifest": return !!(v && String(v).trim());
+      case "ikigai": return !!(v && (v.like || v.good || v.need || v.paid || v.center));
+      case "priority": return !!(v && ((v.order && v.order.some(function (x) { return x && String(x).trim(); })) || (v.why && v.why.trim())));
       default: return false;
     }
   }
@@ -206,6 +208,21 @@
     if (v == null) return "";
     if (typeof v === "string") return v;
     if (v.picked !== undefined) return fmtChoices(id);
+    if (v.like !== undefined) {
+      var ip = [];
+      if (v.like) ip.push("좋아하는 것: " + v.like);
+      if (v.good) ip.push("잘하는 것: " + v.good);
+      if (v.need) ip.push("세상이 필요로 하는 것: " + v.need);
+      if (v.paid) ip.push("보상받을 수 있는 것: " + v.paid);
+      if (v.center) ip.push("겹치는 곳: " + v.center);
+      return ip.join(" / ");
+    }
+    if (v.order !== undefined) {
+      var ord = (v.order || []).filter(function (x) { return x && String(x).trim(); });
+      var ps = ord.map(function (x, i) { return (i + 1) + ". " + x; }).join(" / ");
+      if (v.why && v.why.trim()) ps += (ps ? " " : "") + "(1순위 이유: " + v.why + ")";
+      return ps;
+    }
     if (v.l2 !== undefined) { var pick = (v.l2 && v.l2.length) ? v.l2 : (v.l1 || []); return pick.join(", "); }
     if (v.center !== undefined) return [v.center].concat(v.cells || []).filter(function (x) { return x; }).join(" / ");
     if (v.v !== undefined) return v.v.filter(function (x) { return x; }).join(", ");
@@ -286,6 +303,61 @@
       '<textarea rows="' + (s.rows || 4) + '" placeholder="' + esc(s.placeholder || "") + '" oninput="setManifest(\'' + s.id + '\',this.value)">' + esc(v) + "</textarea></div>";
   }
 
+  /* 네 가지가 만나는 곳 */
+  function ikigaiData(id) { if (!A[id]) A[id] = { like: "", good: "", need: "", paid: "", center: "" }; return A[id]; }
+  window.setIkigai = function (id, k, v) { ikigaiData(id)[k] = v; save(); };
+  function compIkigai(s) {
+    var g = ikigaiData(s.id);
+    var hint = s.hint ? '<p class="hint">' + esc(s.hint) + "</p>" : "";
+    var box = function (k, label) {
+      return '<label class="ikcell ik-' + k + '"><span>' + esc(label) + "</span>" +
+        '<textarea rows="3" oninput="setIkigai(\'' + s.id + '\',\'' + k + '\',this.value)">' + esc(g[k]) + "</textarea></label>";
+    };
+    return hint + '<div class="ikigai">' +
+      box("like", "내가 좋아하는 것") + box("good", "내가 잘하는 것") +
+      box("need", "세상이 필요로 하는 것") + box("paid", "보상받을 수 있는 것") + "</div>" +
+      '<label class="rfield"><span>네 가지가 겹치는 한가운데엔 무엇이 떠오르나요?</span>' +
+      '<textarea rows="2" oninput="setIkigai(\'' + s.id + '\',\'center\',this.value)">' + esc(g.center) + "</textarea></label>";
+  }
+
+  /* 가치 우선순위 */
+  function priorityData(id) {
+    if (!A[id]) A[id] = { order: [], why: "" };
+    var p = A[id];
+    if (!p.order || !p.order.length) {
+      var src = (A.w3_journey && A.w3_journey.v) ? A.w3_journey.v.filter(function (x) { return x && x.trim(); }) : [];
+      p.order = src.slice();
+    }
+    return p;
+  }
+  window.setPriorityWhy = function (id, v) { if (!A[id]) A[id] = { order: [], why: "" }; A[id].why = v; save(); };
+  window.setPriorityItem = function (id, i, v) { if (!A[id]) A[id] = { order: [], why: "" }; A[id].order[i] = v; save(); };
+  window.movePriority = function (id, i, dir) {
+    var p = A[id]; if (!p || !p.order) return;
+    var j = i + dir; if (j < 0 || j >= p.order.length) return;
+    var t = p.order[i]; p.order[i] = p.order[j]; p.order[j] = t;
+    save(); renderStep();
+  };
+  function compPriority(s) {
+    var p = priorityData(s.id);
+    var hint = s.hint ? '<p class="hint">' + esc(s.hint) + "</p>" : "";
+    if (!p.order.length) {
+      var blanks = "";
+      for (var k = 0; k < 5; k++) {
+        blanks += '<input type="text" class="jval" placeholder="가치 ' + (k + 1) + '" value="' + esc(p.order[k] || "") + '" oninput="setPriorityItem(\'' + s.id + "'," + k + ',this.value)">';
+      }
+      return hint + '<p class="hint">아직 가치 여정 결과가 없네요. 지금 중요한 가치를 직접 적어도 돼요.</p><div class="jvals">' + blanks + "</div>";
+    }
+    var rows = p.order.map(function (val, i) {
+      var up = i === 0 ? '<span class="prbtn ghost">·</span>' : '<button class="prbtn" onclick="movePriority(\'' + s.id + "'," + i + ',-1)">↑</button>';
+      var down = i === p.order.length - 1 ? '<span class="prbtn ghost">·</span>' : '<button class="prbtn" onclick="movePriority(\'' + s.id + "'," + i + ',1)">↓</button>';
+      return '<div class="prow"><span class="prank">' + (i + 1) + '</span><span class="pval">' + esc(val) + "</span>" +
+        '<span class="prctl">' + up + down + "</span></div>";
+    }).join("");
+    return hint + '<div class="priority">' + rows + "</div>" +
+      '<label class="rfield"><span>1순위가 왜 먼저인가요?</span><textarea rows="2" oninput="setPriorityWhy(\'' + s.id + '\',this.value)">' + esc(p.why || "") + "</textarea></label>";
+  }
+
   /* ---------- 화면 ---------- */
   function renderHome() {
     var cards = COURSE.weeks.map(function (w) {
@@ -331,6 +403,8 @@
       case "commit": body = compCommit(s); break;
       case "progress": body = compProgress(s); break;
       case "manifest": body = compManifest(s); break;
+      case "ikigai": body = compIkigai(s); break;
+      case "priority": body = compPriority(s); break;
       default: body = "";
     }
     var pct = Math.round((CUR.idx + 1) / list.length * 100);
@@ -369,7 +443,7 @@
       '<div class="bmcell center">' + esc(m.center || "") + "</div>" + c(4) + c(5) + c(6) + c(7) + "</div>";
   }
   function progressSummary() {
-    var ids = ["prog_w2", "prog_w3", "prog_w4"];
+    var ids = ["prog_w2", "prog_w3", "prog_w4", "prog_w5", "prog_w6", "prog_w7", "prog_w8"];
     var n = ids.filter(function (i) { return A[i] && A[i].done; }).length;
     var notes = ids.map(function (i) { return A[i] && A[i].note ? A[i].note : null; }).filter(function (x) { return x; });
     var base = n ? ("지금까지 " + n + "주 실천 체크 ✓") : "아직 체크 전이에요";
@@ -413,16 +487,37 @@
       '<div class="bq"><h4>채우고 싶은 영역 만다라트</h4>' + bookMandala("w4_mandala") + "</div>" +
       bookBlock("AI와 곱씹어 다시 쓴 2부", (A.w4_reframe && A.w4_reframe.mine) || "") + "</div>" +
 
+      '<div class="chapter"><div class="chno">3부</div><h2>내가 원하는 것</h2>' +
+      bookBlock("기분 좋게 하는 것들", A.w5_joy) +
+      bookBlock("꿈꾸는 이상적인 하루", A.w5_dreamday) +
+      bookBlock("원하는 삶의 속도 · 리듬", fmtChoices("w5_pace")) +
+      bookBlock("만들고 싶은 습관", A.w5_habit) +
+      bookBlock("나에게 좋은 관계란", A.w6_good_rel) +
+      bookBlock("죽기 전 해보고 싶은 것", A.w6_challenge) +
+      bookBlock("깨고 싶은 두려움 · 한계", A.w6_fear) +
+      bookBlock("일에서 원하는 것", A.w7_next_work) +
+      bookBlock("네 가지가 만나는 곳", fmtAny("w7_ikigai")) +
+      bookBlock("3 · 7 · 10년 후의 나", A.w8_futures) +
+      bookBlock("어떻게 기억되고 싶은지", A.w8_epitaph) +
+      bookBlock("나의 생의 목표", A.w8_lifegoal) +
+      bookBlock("내 가치의 우선순위", fmtAny("w8_priority")) +
+      '<div class="bq"><h4>생의 목표 만다라트</h4>' + bookMandala("w8_goal_mandala") + "</div>" +
+      bookBlock("AI와 곱씹어 다시 쓴 3부", (A.w8_reframe && A.w8_reframe.mine) || "") + "</div>" +
+
       '<div class="chapter"><h2>나의 미래 그리기</h2>' +
       bookBlock("1년 뒤 바라는 장면", A.manifest_w1) +
       bookBlock("그 미래의 평범한 하루", A.manifest_w2) +
       bookBlock("나의 확언", A.manifest_w3) +
-      bookBlock("이미 이룬 듯, 감사", A.manifest_w4) + "</div>" +
+      bookBlock("이미 이룬 듯, 감사", A.manifest_w4) +
+      bookBlock("미래의 내가 보낸 편지", A.manifest_w5) +
+      bookBlock("내려놓고 싶은 두려움", A.manifest_w6) +
+      bookBlock("1년 뒤 자랑하고 싶은 것", A.manifest_w7) +
+      bookBlock("생의 목표, 한 장면", A.manifest_w8) + "</div>" +
       '<div class="chapter"><h2>3개월 사소한 완수</h2>' +
       bookBlock("내가 정한 작은 일", (A.commit && A.commit.what) || "") +
       '<div class="bq"><h4>진행</h4><p>' + progressSummary() + "</p></div></div>" +
-      '<div class="chapter future"><div class="chno">3부 · 4부 · 맺음</div><h2>다음 달에 채워집니다</h2>' +
-      '<p class="empty">내가 원하는 것 · 나의 실험 · 다음 1년의 나에게</p></div>' +
+      '<div class="chapter future"><div class="chno">4부 · 맺음</div><h2>다음 달에 채워집니다</h2>' +
+      '<p class="empty">나의 실험 · 다음 1년의 나에게</p></div>' +
       "</section>";
     document.getElementById("app").innerHTML = html;
     window.scrollTo(0, 0);

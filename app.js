@@ -566,7 +566,7 @@
       '<div class="noprint bookbar"><a class="btn ghost" href="#home">← 홈</a><button class="btn" onclick="window.print()">PDF로 저장 / 인쇄</button></div>' +
       '<div class="cover">' + STK.star + STK.heart + '<div class="covertag">' + esc(COURSE.title) + '</div><h1>' + esc(title) + '</h1><p class="byline">' + esc(author) + " 지음</p>" + STK.sprout + "</div>" +
 
-      '<div class="chapter ch1">' + chapHead("서문", "나는 왜 이 책을 쓰는가", STK.book) +
+      '<div class="chapter ch1">' + chapHead("첫 페이지", "나는 왜 이 책을 쓰는가", STK.book) +
       bookBlock("이 책을 시작하는 지금의 나는,", A.w1_start_mind) +
       bookBlock("요즘 가장 답답하거나 궁금한 것", A.w1_curious) +
       bookBlock("내가 답을 찾고 싶은 질문", A.w1_question) +

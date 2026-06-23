@@ -94,7 +94,7 @@
       default: return false;
     }
   }
-  function inputSteps(week) { return week.steps.filter(function (s) { return s.type !== "intro" && s.type !== "promptForge"; }); }
+  function inputSteps(week) { return week.steps.filter(function (s) { return s.type !== "intro" && s.type !== "promptForge" && !s.optional; }); }
 
   /* ---------- 레이더 ---------- */
   function ring(n, cx, cy, r) {
@@ -417,7 +417,7 @@
       '<div class="crumbs"><a href="#home">홈</a> · ' + esc(week.badge) + " · " + (CUR.idx + 1) + "/" + list.length + "</div>" +
       '<div class="pbar"><i style="width:' + pct + '%"></i></div>' +
       '<div class="jtitle">' + esc(week.title) + "</div>" +
-      "<h2>" + esc(s.title) + "</h2>" +
+      "<h2>" + esc(s.title) + (s.optional ? ' <span class="opthint">· 원하면</span>' : "") + "</h2>" +
       '<div class="stepbody">' + body + "</div>" +
       '<div class="nav"><a class="btn ghost" href="' + prevHref + '">← 이전</a>' +
       '<a class="btn" href="' + nextHref + '">' + nextLabel + "</a></div>" +
@@ -488,6 +488,8 @@
       bookBlock("AI와 곱씹어 다시 쓴 2부", (A.w4_reframe && A.w4_reframe.mine) || "") + "</div>" +
 
       '<div class="chapter"><div class="chno">3부</div><h2>내가 원하는 것</h2>' +
+      bookBlock("결국 내가 원하는 것", A.w8_essence) +
+      bookBlock("지난 한 달, 새로 알게 된 나", A.w5_review1m) +
       bookBlock("기분 좋게 하는 것들", A.w5_joy) +
       bookBlock("꿈꾸는 이상적인 하루", A.w5_dreamday) +
       bookBlock("원하는 삶의 속도 · 리듬", fmtChoices("w5_pace")) +

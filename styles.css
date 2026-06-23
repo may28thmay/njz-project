@@ -54,6 +54,7 @@ main{max-width:720px; margin:0 auto; padding:28px 20px 80px}
 .pbar i{display:block; height:100%; background:var(--accent); transition:width .25s}
 .jtitle{font-size:13px; color:var(--accent-d); font-weight:600}
 .step h2{font-size:24px; margin:4px 0 16px; letter-spacing:-.02em}
+.step h2 .opthint{font-size:14px; color:var(--muted); font-weight:400; letter-spacing:0}
 .introbody{background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--accent);
   padding:16px 18px; border-radius:12px; color:#5c564c}
 .hint{color:var(--muted); font-size:14px; margin:0 0 12px}

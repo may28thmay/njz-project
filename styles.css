@@ -146,6 +146,16 @@ main{max-width:720px; margin:0 auto; padding:28px 20px 80px}
 .jval:focus{outline:none; border-color:var(--accent)}
 @media (max-width:560px){ .jvals{grid-template-columns:1fr} }
 
+/* 끌어당김 · 사소한 완수 */
+.commitwhat{width:100%; border:1px solid var(--line); border-radius:12px; padding:13px 14px; font:inherit; margin-bottom:12px; background:var(--surface)}
+.commitwhat:focus{outline:none; border-color:var(--accent)}
+.checkrow{display:flex; align-items:center; gap:8px; margin:10px 0; font-size:15px; cursor:pointer}
+.checkrow input{width:18px; height:18px; accent-color:var(--accent)}
+.manifestbox{background:#eef3ec; border:1px solid var(--line); border-radius:14px; padding:16px 18px}
+.manifestbox .hint{color:var(--accent-d); margin-bottom:10px}
+.manifestbox textarea{width:100%; border:1px solid var(--line); border-radius:12px; padding:12px 14px; font:inherit; background:#fff; resize:vertical}
+.manifestbox textarea:focus{outline:none; border-color:var(--accent)}
+
 /* 인쇄 */
 @media print{
   .noprint, .topbar{display:none !important}

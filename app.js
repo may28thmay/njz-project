@@ -86,6 +86,9 @@
       case "dailyLog": return !!(v && v.some(function (d) { return Object.keys(d).some(function (k) { return d[k] && String(d[k]).trim(); }); }));
       case "reframe": return !!(v && (v.resonate || v.doubt || v.mine));
       case "journey": return !!(v && ((v.v && v.v.some(function (x) { return x; })) || v.where || v.surprise));
+      case "commit": return !!(v && (v.what || v.why));
+      case "progress": return !!(v && (v.done || v.note));
+      case "manifest": return !!(v && String(v).trim());
       default: return false;
     }
   }
@@ -256,6 +259,32 @@
       '<label class="rfield"><span>' + esc(s.where || "이 가치들이 내 삶 어디에서 보이나요?") + '</span><textarea rows="3" oninput="setJourneyField(\'' + s.id + '\',\'where\',this.value)">' + esc(j.where || "") + "</textarea></label>" +
       '<label class="rfield"><span>' + esc(s.surprise || "의외였던 가치 하나, 왜 의외였나요?") + '</span><textarea rows="2" oninput="setJourneyField(\'' + s.id + '\',\'surprise\',this.value)">' + esc(j.surprise || "") + "</textarea></label>";
   }
+  function commitData() { if (!A.commit) A.commit = { what: "", why: "" }; return A.commit; }
+  window.setCommitField = function (k, v) { commitData()[k] = v; save(); };
+  function compCommit(s) {
+    var c = commitData();
+    var hint = s.hint ? '<p class="hint">' + esc(s.hint) + "</p>" : "";
+    return hint +
+      '<input type="text" class="commitwhat" placeholder="예: 사진 정리" value="' + esc(c.what || "") + '" oninput="setCommitField(\'what\',this.value)">' +
+      '<label class="rfield"><span>왜 이걸 해내고 싶나요? (선택)</span><textarea rows="2" oninput="setCommitField(\'why\',this.value)">' + esc(c.why || "") + "</textarea></label>";
+  }
+  function progData(id) { if (!A[id]) A[id] = { done: false, note: "" }; return A[id]; }
+  window.setProgDone = function (id, v) { progData(id).done = v; save(); };
+  window.setProgNote = function (id, v) { progData(id).note = v; save(); };
+  function compProgress(s) {
+    var p = progData(s.id);
+    var what = (A.commit && A.commit.what) ? esc(A.commit.what) : "(1주차에서 정한 사소한 일)";
+    return '<p class="hint">내가 정한 사소한 일: <b>' + what + "</b></p>" +
+      '<label class="checkrow"><input type="checkbox" ' + (p.done ? "checked" : "") + ' onchange="setProgDone(\'' + s.id + '\',this.checked)"> 이번 주에 (조금이라도) 했어요</label>' +
+      '<label class="rfield"><span>한 줄 기록 (선택)</span><input type="text" value="' + esc(p.note || "") + '" oninput="setProgNote(\'' + s.id + '\',this.value)"></label>';
+  }
+  window.setManifest = function (id, v) { A[id] = v; save(); };
+  function compManifest(s) {
+    var v = A[s.id] || "";
+    var prompt = s.prompt ? '<p class="hint">' + esc(s.prompt) + "</p>" : "";
+    return '<div class="manifestbox">' + prompt +
+      '<textarea rows="' + (s.rows || 4) + '" placeholder="' + esc(s.placeholder || "") + '" oninput="setManifest(\'' + s.id + '\',this.value)">' + esc(v) + "</textarea></div>";
+  }
 
   /* ---------- 화면 ---------- */
   function renderHome() {
@@ -299,6 +328,9 @@
       case "promptForge": body = compPromptForge(s); break;
       case "reframe": body = compReframe(s); break;
       case "journey": body = compJourney(s); break;
+      case "commit": body = compCommit(s); break;
+      case "progress": body = compProgress(s); break;
+      case "manifest": body = compManifest(s); break;
       default: body = "";
     }
     var pct = Math.round((CUR.idx + 1) / list.length * 100);
@@ -335,6 +367,13 @@
     var c = function (i) { return '<div class="bmcell">' + esc(m.cells[i] || "") + "</div>"; };
     return '<div class="mandala book">' + c(0) + c(1) + c(2) + c(3) +
       '<div class="bmcell center">' + esc(m.center || "") + "</div>" + c(4) + c(5) + c(6) + c(7) + "</div>";
+  }
+  function progressSummary() {
+    var ids = ["prog_w2", "prog_w3", "prog_w4"];
+    var n = ids.filter(function (i) { return A[i] && A[i].done; }).length;
+    var notes = ids.map(function (i) { return A[i] && A[i].note ? A[i].note : null; }).filter(function (x) { return x; });
+    var base = n ? ("지금까지 " + n + "주 실천 체크 ✓") : "아직 체크 전이에요";
+    return notes.length ? base + " — " + esc(notes.join(" · ")) : base;
   }
   function renderBook() {
     var title = (A.book_title && A.book_title.trim()) || "제목 없는 책";
@@ -374,6 +413,14 @@
       '<div class="bq"><h4>채우고 싶은 영역 만다라트</h4>' + bookMandala("w4_mandala") + "</div>" +
       bookBlock("AI와 곱씹어 다시 쓴 2부", (A.w4_reframe && A.w4_reframe.mine) || "") + "</div>" +
 
+      '<div class="chapter"><h2>나의 미래 그리기</h2>' +
+      bookBlock("1년 뒤 바라는 장면", A.manifest_w1) +
+      bookBlock("그 미래의 평범한 하루", A.manifest_w2) +
+      bookBlock("나의 확언", A.manifest_w3) +
+      bookBlock("이미 이룬 듯, 감사", A.manifest_w4) + "</div>" +
+      '<div class="chapter"><h2>3개월 사소한 완수</h2>' +
+      bookBlock("내가 정한 작은 일", (A.commit && A.commit.what) || "") +
+      '<div class="bq"><h4>진행</h4><p>' + progressSummary() + "</p></div></div>" +
       '<div class="chapter future"><div class="chno">3부 · 4부 · 맺음</div><h2>다음 달에 채워집니다</h2>' +
       '<p class="empty">내가 원하는 것 · 나의 실험 · 다음 1년의 나에게</p></div>' +
       "</section>";

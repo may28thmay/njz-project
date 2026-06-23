@@ -36,7 +36,16 @@
   /* ---------- 입력 핸들러 (인라인에서 호출) ---------- */
   window.setText = function (id, v) { A[id] = v; save(); };
 
-  function choice(id) { if (!A[id]) A[id] = { picked: [], other: "" }; return A[id]; }
+  function choice(id) {
+    if (!A[id]) A[id] = { picked: [], other: "" };
+    var c = A[id];
+    if (!c.picked) c.picked = [];
+    if (typeof c.other === "string" && c.other.trim()) {
+      if (c.picked.indexOf(c.other.trim()) < 0) c.picked.push(c.other.trim());
+      c.other = "";
+    }
+    return c;
+  }
   window.toggleChoice = function (id, label, el, multi) {
     var c = choice(id), i = c.picked.indexOf(label);
     if (multi) { if (i >= 0) c.picked.splice(i, 1); else c.picked.push(label); }
@@ -50,7 +59,30 @@
     if (el) el.classList.toggle("on", c.picked.indexOf(label) >= 0);
     save();
   };
-  window.setOther = function (id, v) { choice(id).other = v; save(); };
+  window.addOther = function (id, el, multi) {
+    var v = (el.value || "").trim();
+    if (!v) return;
+    var c = choice(id);
+    var box = el.parentNode.querySelector(".chips");
+    if (box) {
+      var btns = box.querySelectorAll(".chip");
+      for (var i = 0; i < btns.length; i++) {
+        if (btns[i].textContent === v) {
+          if (c.picked.indexOf(v) < 0) { c.picked.push(v); btns[i].classList.add("on"); save(); }
+          el.value = ""; el.focus(); return;
+        }
+      }
+    }
+    c.picked.push(v); save();
+    if (box) {
+      var b = document.createElement("button");
+      b.className = "chip on";
+      b.textContent = v;
+      b.onclick = function () { window.toggleChoice(id, v, b, !!multi); };
+      box.appendChild(b);
+    }
+    el.value = ""; el.focus();
+  };
 
   function card(id) { if (!A[id]) A[id] = { stage: 1, l1: [], l2: [] }; return A[id]; }
   window.cardToggle = function (id, word, el) {
@@ -174,16 +206,19 @@
     return hint + field;
   }
   function compChoices(s) {
-    var c = A[s.id] || { picked: [], other: "" };
+    var c = choice(s.id);
+    var picked = c.picked || [];
     var hint = s.hint ? '<p class="hint">' + esc(s.hint) + "</p>" : "";
-    var chips = s.options.map(function (o) {
-      var on = c.picked.indexOf(o) >= 0 ? " on" : "";
-      return '<button class="chip' + on + '" onclick="toggleChoice(\'' + s.id + "','" + esc(o).replace(/'/g, "") + "',this," + (s.multi ? "true" : "false") + ')">' + esc(o) + "</button>";
-    }).join("");
+    var chip = function (o, on) {
+      return '<button class="chip' + (on ? " on" : "") + '" onclick="toggleChoice(\'' + s.id + "','" + esc(o).replace(/'/g, "") + "',this," + (s.multi ? "true" : "false") + ')">' + esc(o) + "</button>";
+    };
+    var chips = s.options.map(function (o) { return chip(o, picked.indexOf(o) >= 0); }).join("");
+    var customChips = picked.filter(function (p) { return s.options.indexOf(p) < 0; })
+      .map(function (p) { return chip(p, true); }).join("");
     var other = s.allowOther
-      ? '<input type="text" class="other" placeholder="직접 쓰기" value="' + esc(c.other || "") + '" oninput="setOther(\'' + s.id + '\',this.value)">'
+      ? '<input type="text" class="other" placeholder="직접 쓰기 후 Enter ↵" onkeydown="if(event.key===\'Enter\'){event.preventDefault();addOther(\'' + s.id + '\',this,' + (s.multi ? "true" : "false") + ');}">'
       : "";
-    return hint + '<div class="chips">' + chips + "</div>" + other;
+    return hint + '<div class="chips">' + chips + customChips + "</div>" + other;
   }
   function compCard(s) {
     var c = card(s.id);

@@ -570,7 +570,9 @@
       bookBlock("이 책을 시작하는 지금의 나는,", A.w1_start_mind) +
       bookBlock("요즘 가장 답답하거나 궁금한 것", A.w1_curious) +
       bookBlock("내가 답을 찾고 싶은 질문", A.w1_question) +
-      bookBlock("나를 관통하는 가치 5", vals5) + "</div>" +
+      bookBlock("나를 관통하는 가치 5", vals5) +
+      bookBlock("가치 여정에서 다시 쓴 나", (A.w1_value_reflect && A.w1_value_reflect.mine) || "") +
+      bookBlock("끝까지 망설인 가치", A.w1_value_kept) + "</div>" +
 
       '<div class="chapter ch2">' + chapHead("1부", "나의 작동방식", STK.sprout) +
       bookBlock("나는 이렇게 작동한다", A.w2_summary) +

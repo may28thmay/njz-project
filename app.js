@@ -631,7 +631,6 @@
       bookBlock("끝까지 망설인 가치", A.w1_value_kept) + "</div>" +
 
       '<div class="chapter ch2">' + chapHead("1부", "나의 작동방식", STK.sprout) +
-      bookBlock("나는 이렇게 작동한다", A.w2_summary) +
       bookBlock("집중이 잘 될 때", fmtChoices("w2_focus_when")) +
       bookBlock("금방 흩어질 때", fmtChoices("w2_focus_break")) +
       bookBlock("시간 가는 줄 모르고 빠져드는 일", A.w2_flow) +

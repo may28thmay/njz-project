@@ -217,11 +217,14 @@ main{max-width:680px}
 
 /* 인쇄 */
 @media print{
+  @page{size:A4 landscape; margin:12mm}
   *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
   .noprint, .topbar{display:none !important}
   body{background:#fff; background-image:none}
   main{max-width:none; padding:0}
-  .chapter{box-shadow:none; border-color:#ddd}
-  .cover{box-shadow:none; border-color:#ddd; page-break-after:always}
-  .bq, .chead{break-inside:avoid}
+  /* 책을 좌우 2단(펼침면)으로 + 가운데 제본선 */
+  .book{column-count:2; column-gap:48px; column-rule:1.5px dashed #d9d4c6}
+  .cover{column-span:all; box-shadow:none; border:none; page-break-after:always; margin-bottom:0}
+  .chapter{box-shadow:none; border:none; padding:2px; margin-bottom:14px; break-inside:auto}
+  .chead, .bq, .mandala, .radar, .manifestbox{break-inside:avoid}
 }

@@ -12,7 +12,15 @@
     try { return JSON.parse(localStorage.getItem(KEY)) || { a: {} }; }
     catch (e) { return { a: {} }; }
   }
-  function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); }
+    catch (e) {
+      if (!save._warned) {
+        save._warned = true;
+        setTimeout(function () { alert("저장 공간이 가득 찼거나 브라우저가 저장을 막고 있어요. '내 기록 백업하기'로 파일을 받아두세요."); }, 0);
+      }
+    }
+  }
 
   function esc(s) {
     return (s == null ? "" : String(s)).replace(/[&<>"]/g, function (c) {
@@ -72,6 +80,40 @@
     if (confirm("지금까지 쓴 내용을 모두 지울까요? 되돌릴 수 없어요.")) {
       localStorage.removeItem(KEY); location.hash = "#home"; location.reload();
     }
+  };
+
+  /* ---------- 백업 (파일 내보내기/가져오기) ---------- */
+  window.exportData = function () {
+    try {
+      var data = JSON.stringify({ app: "naleul3", v: 1, savedAt: new Date().toISOString(), a: state.a });
+      var blob = new Blob([data], { type: "application/json" });
+      var url = URL.createObjectURL(blob);
+      var d = new Date(), pad = function (n) { return (n < 10 ? "0" : "") + n; };
+      var name = "나를알아가는3개월_백업_" + d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + ".json";
+      var a = document.createElement("a");
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    } catch (e) { alert("백업에 실패했어요. 잠시 후 다시 시도해 주세요."); }
+  };
+  window.importData = function (input) {
+    var file = input.files && input.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      try {
+        var obj = JSON.parse(e.target.result);
+        var ans = obj && obj.a;
+        if (!ans || typeof ans !== "object" || Array.isArray(ans)) throw new Error("형식");
+        if (!confirm("지금 이 기기의 기록을 백업 파일 내용으로 바꿔요. 계속할까요?")) { input.value = ""; return; }
+        localStorage.setItem(KEY, JSON.stringify({ a: ans }));
+        location.hash = "#home"; location.reload();
+      } catch (err) {
+        alert("이 파일은 백업 파일이 아닌 것 같아요. '내 기록 백업하기'로 받은 .json 파일을 골라주세요.");
+        input.value = "";
+      }
+    };
+    reader.readAsText(file);
   };
 
   /* ---------- 채움 여부 ---------- */
@@ -376,6 +418,12 @@
       '<div class="promises"><ul>' + promises + "</ul></div>" +
       '<div class="wgrid">' + cards + locked + "</div>" +
       '<div class="rowbtn center"><a class="btn big" href="#book">내 책 미리보기 →</a></div>' +
+      '<div class="backup">' +
+      '<p class="backup-note">쓰는 즉시 자동 저장돼요. 폰을 바꾸거나 브라우저를 정리하기 전엔 한 번 백업을 받아두면 안전해요. (친구들은 각자 자기 기기에서 각자 받으면 돼요)</p>' +
+      '<div class="rowbtn center"><button class="btn ghost" onclick="exportData()">내 기록 백업하기</button> ' +
+      '<button class="btn ghost" onclick="document.getElementById(\'importFile\').click()">백업 불러오기</button></div>' +
+      '<input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importData(this)">' +
+      "</div>" +
       '<div class="reset"><button onclick="resetAll()">처음부터 다시</button></div>' +
       "</section>";
     window.scrollTo(0, 0);
@@ -420,6 +468,7 @@
       "<h2>" + esc(s.title) + (s.optional ? ' <span class="opthint">· 원하면</span>' : "") + "</h2>" +
       '<div class="stepbody">' + body + "</div>" +
       '<div class="nav"><a class="btn ghost" href="' + prevHref + '">← 이전</a>' +
+      '<a class="btn ghost navhome" href="#home">홈</a>' +
       '<a class="btn" href="' + nextHref + '">' + nextLabel + "</a></div>" +
       (isLast ? '<div class="rowbtn center"><a class="btn big" href="#book">내 책 미리보기 →</a></div>' : "") +
       "</section>";
@@ -431,6 +480,21 @@
     var c = A[id]; if (!c) return "";
     var arr = (c.picked || []).slice(); if (c.other && c.other.trim()) arr.push(c.other.trim());
     return arr.join(", ");
+  }
+  var STK = {
+    book: '<svg class="stk" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2" fill="#cdd9ee"/><rect x="4" y="4" width="8" height="16" rx="2" fill="#b7c8e4"/><path d="M12 5v14" stroke="#fff" stroke-width="1.1"/></svg>',
+    sprout: '<svg class="stk" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21v-8" stroke="#7faf6a" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M12 15c-1-4-4-4-6-4 0 3 2 5 6 4z" fill="#a9d18e"/><path d="M12 13c1-4 4-4 6-4 0 3-2 5-6 4z" fill="#bcd9a0"/></svg>',
+    star: '<svg class="stk" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.4 6.1 6.6.3-5.1 4.2 1.7 6.4L12 16.9 6.4 20.2l1.7-6.4L3 9.6l6.6-.3z" fill="#f3cd6b"/></svg>',
+    cloud: '<svg class="stk" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17a4 4 0 0 1-.3-8A5 5 0 0 1 16 8a3.5 3.5 0 0 1 1 6.9z" fill="#dbe6f2"/></svg>',
+    heart: '<svg class="stk" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-6.5-4.2-6.5-9A3.5 3.5 0 0 1 12 8.2 3.5 3.5 0 0 1 18.5 11c0 4.8-6.5 9-6.5 9z" fill="#efa8bf"/></svg>',
+    sun: '<svg class="stk" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="#f5cf72"/><g stroke="#f5cf72" stroke-width="2" stroke-linecap="round"><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"/></g></svg>',
+    leaf: '<svg class="stk" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19C5 11 11 5 19 5c0 8-6 14-14 14z" fill="#bcd9a0"/><path d="M5 19C9 15 13 11 17 7" stroke="#8db870" stroke-width="1.1" fill="none"/></svg>',
+    moon: '<svg class="stk" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 13.5A6 6 0 0 1 10.5 7.5 6 6 0 1 0 16.5 13.5z" fill="#cdd9ee"/></svg>'
+  };
+  function chapHead(no, title, svg) {
+    return '<div class="chead">' + (svg || "") +
+      '<div class="chtitle">' + (no ? '<span class="chno">' + esc(no) + "</span>" : "") +
+      "<h2>" + esc(title) + "</h2></div></div>";
   }
   function bookBlock(label, val) {
     if (!val || !String(val).trim()) return '<div class="bq"><h4>' + esc(label) + '</h4><p class="empty">아직 비어 있어요</p></div>';
@@ -458,15 +522,15 @@
     var html =
       '<section class="book">' +
       '<div class="noprint bookbar"><a class="btn ghost" href="#home">← 홈</a><button class="btn" onclick="window.print()">PDF로 저장 / 인쇄</button></div>' +
-      '<div class="cover"><div class="covertag">' + esc(COURSE.title) + '</div><h1>' + esc(title) + '</h1><p class="byline">' + esc(author) + " 지음</p></div>" +
+      '<div class="cover">' + STK.star + STK.heart + '<div class="covertag">' + esc(COURSE.title) + '</div><h1>' + esc(title) + '</h1><p class="byline">' + esc(author) + " 지음</p>" + STK.sprout + "</div>" +
 
-      '<div class="chapter"><div class="chno">서문</div><h2>나는 왜 이 책을 쓰는가</h2>' +
+      '<div class="chapter ch1">' + chapHead("서문", "나는 왜 이 책을 쓰는가", STK.book) +
       bookBlock("이 책을 시작하는 지금의 나는,", A.w1_start_mind) +
       bookBlock("요즘 가장 답답하거나 궁금한 것", A.w1_curious) +
       bookBlock("내가 답을 찾고 싶은 질문", A.w1_question) +
       bookBlock("3개월 뒤의 나에게", A.w1_letter) + "</div>" +
 
-      '<div class="chapter"><div class="chno">1부</div><h2>나의 작동방식</h2>' +
+      '<div class="chapter ch2">' + chapHead("1부", "나의 작동방식", STK.sprout) +
       bookBlock("나는 이렇게 작동한다", A.w2_summary) +
       bookBlock("집중이 잘 될 때", fmtChoices("w2_focus_when")) +
       bookBlock("금방 흩어질 때", fmtChoices("w2_focus_break")) +
@@ -474,20 +538,20 @@
       bookBlock("에너지가 가장 좋은 시간대", fmtChoices("w2_energy_peak")) +
       bookBlock("충전되는 것 / 방전되는 것", A.w2_recharge) + "</div>" +
 
-      '<div class="chapter"><h2>나의 강점 지도</h2>' +
+      '<div class="chapter ch3">' + chapHead("", "나의 강점 지도", STK.star) +
       bookBlock("나를 관통하는 가치 5", vals5) +
       bookBlock("남들은 어려운데 나는 쉬운 일", A.w3_easy) +
       bookBlock("사람들이 고마워하는 것", A.w3_thank) +
       bookBlock("내가 잘 되는 환경", fmtChoices("w3_env")) +
       bookBlock("AI와 곱씹어 다시 쓴 1부", (A.w3_reframe && A.w3_reframe.mine) || "") + "</div>" +
 
-      '<div class="chapter"><div class="chno">2부</div><h2>나의 현재 지도</h2>' +
+      '<div class="chapter ch4">' + chapHead("2부", "나의 현재 지도", STK.cloud) +
       '<div class="bq"><h4>지금 내 삶의 영역</h4><svg class="radar" viewBox="0 0 220 220">' + radarInner(areaItems, radarVals) + "</svg></div>" +
       bookBlock("각 영역, 지금 한 줄", A.w4_area_note) +
       '<div class="bq"><h4>채우고 싶은 영역 만다라트</h4>' + bookMandala("w4_mandala") + "</div>" +
       bookBlock("AI와 곱씹어 다시 쓴 2부", (A.w4_reframe && A.w4_reframe.mine) || "") + "</div>" +
 
-      '<div class="chapter"><div class="chno">3부</div><h2>내가 원하는 것</h2>' +
+      '<div class="chapter ch5">' + chapHead("3부", "내가 원하는 것", STK.heart) +
       bookBlock("결국 내가 원하는 것", A.w8_essence) +
       bookBlock("지난 한 달, 새로 알게 된 나", A.w5_review1m) +
       bookBlock("기분 좋게 하는 것들", A.w5_joy) +
@@ -506,7 +570,7 @@
       '<div class="bq"><h4>생의 목표 만다라트</h4>' + bookMandala("w8_goal_mandala") + "</div>" +
       bookBlock("AI와 곱씹어 다시 쓴 3부", (A.w8_reframe && A.w8_reframe.mine) || "") + "</div>" +
 
-      '<div class="chapter"><h2>나의 미래 그리기</h2>' +
+      '<div class="chapter ch6">' + chapHead("", "나의 미래 그리기", STK.sun) +
       bookBlock("1년 뒤 바라는 장면", A.manifest_w1) +
       bookBlock("그 미래의 평범한 하루", A.manifest_w2) +
       bookBlock("나의 확언", A.manifest_w3) +
@@ -515,10 +579,10 @@
       bookBlock("내려놓고 싶은 두려움", A.manifest_w6) +
       bookBlock("1년 뒤 자랑하고 싶은 것", A.manifest_w7) +
       bookBlock("생의 목표, 한 장면", A.manifest_w8) + "</div>" +
-      '<div class="chapter"><h2>3개월 사소한 완수</h2>' +
+      '<div class="chapter ch7">' + chapHead("", "3개월 사소한 완수", STK.leaf) +
       bookBlock("내가 정한 작은 일", (A.commit && A.commit.what) || "") +
       '<div class="bq"><h4>진행</h4><p>' + progressSummary() + "</p></div></div>" +
-      '<div class="chapter future"><div class="chno">4부 · 맺음</div><h2>다음 달에 채워집니다</h2>' +
+      '<div class="chapter future ch8">' + chapHead("4부 · 맺음", "다음 달에 채워집니다", STK.moon) +
       '<p class="empty">나의 실험 · 다음 1년의 나에게</p></div>' +
       "</section>";
     document.getElementById("app").innerHTML = html;

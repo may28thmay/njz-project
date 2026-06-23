@@ -2,6 +2,7 @@
   --bg:#f6f3ec; --surface:#ffffff; --ink:#33302b; --muted:#8b8275;
   --accent:#6f8a63; --accent-d:#56704c; --line:#e7e1d5; --soft:#efeadf;
   --radius:16px; --shadow:0 6px 22px rgba(60,52,40,.07);
+  --tp1:#cfe0d6; --tp2:#e8ccd5; --tp3:#e1e2c4; --tp4:#cdd9e6;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -175,11 +176,52 @@ main{max-width:720px; margin:0 auto; padding:28px 20px 80px}
 .prbtn:hover{background:var(--accent); color:#fff; border-color:var(--accent)}
 .prbtn.ghost{background:transparent; border-color:transparent; color:#d3ccbe; cursor:default}
 
+/* ===== 앱 UI · 깔끔 미니멀 (흰 배경, ②번 톤) ===== */
+body{background-color:#ffffff; background-image:none}
+main{max-width:680px}
+.hero h1{letter-spacing:-.03em}
+/* 카드는 흰 바탕 + 얇은 선, 손글씨·테이프·도트 없음(가독성 우선) */
+.wcard, .chapter, .promises{background:var(--surface)}
+
+/* 스텝 하단 홈 버튼 */
+.nav{gap:8px}
+.navhome{flex:0 0 auto; opacity:.8}
+@media (max-width:560px){ .nav{flex-wrap:wrap; gap:10px} .navhome{order:3} }
+
+/* 백업 영역 */
+.backup{margin-top:26px; padding:16px 18px; background:var(--soft); border:1px dashed var(--line); border-radius:14px; text-align:center}
+.backup-note{margin:0 0 12px; font-size:13px; color:var(--muted); line-height:1.6}
+
+/* ===== 내 책 · 다이어리 템플릿 (흰 종이 + 격자 + 스티커 + 테이프 라벨) ===== */
+.book .cover, .book .chapter{background:#fff}
+.chead{display:flex; align-items:center; gap:11px; margin-bottom:18px}
+.stk{width:30px; height:30px; flex:0 0 auto; display:block}
+.chtitle .chno{display:block; font-size:12px; color:var(--accent-d); font-weight:700; margin-bottom:4px}
+.chtitle h2{margin:0; display:inline-block; padding:4px 13px; background:var(--tp1); border-radius:3px; transform:rotate(-1deg); font-size:20px; line-height:1.35}
+.ch2 .chtitle h2{background:var(--tp3)}
+.ch3 .chtitle h2{background:var(--tp2)}
+.ch4 .chtitle h2{background:var(--tp4)}
+.ch5 .chtitle h2{background:var(--tp2)}
+.ch6 .chtitle h2{background:var(--tp3)}
+.ch7 .chtitle h2{background:var(--tp1)}
+.ch8 .chtitle h2{background:var(--tp4)}
+.book .bq{border:1px solid var(--line); border-radius:10px; padding:10px 13px; margin:10px 0}
+.book .bq h4{color:var(--accent-d); margin-bottom:6px}
+.book .bq p{background-image:repeating-linear-gradient(transparent 0 26px,#ededed 26px 27px); line-height:27px; min-height:27px}
+.book .bq p.empty{background:none; line-height:1.6}
+.book .cover{position:relative; overflow:hidden}
+.cover .stk{position:absolute; width:34px; height:34px}
+.cover .stk:nth-of-type(1){top:20px; left:24px; transform:rotate(-12deg)}
+.cover .stk:nth-of-type(2){top:24px; right:26px; transform:rotate(10deg)}
+.cover .stk:nth-of-type(3){bottom:22px; left:50%; margin-left:-17px; transform:rotate(-4deg)}
+
 /* 인쇄 */
 @media print{
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
   .noprint, .topbar{display:none !important}
-  body{background:#fff}
+  body{background:#fff; background-image:none}
   main{max-width:none; padding:0}
-  .chapter, .cover{box-shadow:none; break-inside:avoid; border-color:#ddd}
-  .cover{page-break-after:always}
+  .chapter{box-shadow:none; border-color:#ddd}
+  .cover{box-shadow:none; border-color:#ddd; page-break-after:always}
+  .bq, .chead{break-inside:avoid}
 }

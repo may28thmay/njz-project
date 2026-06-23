@@ -85,6 +85,7 @@
       case "sliders": return !!(v && Object.keys(v).length);
       case "dailyLog": return !!(v && v.some(function (d) { return Object.keys(d).some(function (k) { return d[k] && String(d[k]).trim(); }); }));
       case "reframe": return !!(v && (v.resonate || v.doubt || v.mine));
+      case "journey": return !!(v && ((v.v && v.v.some(function (x) { return x; })) || v.where || v.surprise));
       default: return false;
     }
   }
@@ -204,6 +205,7 @@
     if (v.picked !== undefined) return fmtChoices(id);
     if (v.l2 !== undefined) { var pick = (v.l2 && v.l2.length) ? v.l2 : (v.l1 || []); return pick.join(", "); }
     if (v.center !== undefined) return [v.center].concat(v.cells || []).filter(function (x) { return x; }).join(" / ");
+    if (v.v !== undefined) return v.v.filter(function (x) { return x; }).join(", ");
     if (v.mine !== undefined) return v.mine || "";
     if (typeof v === "object") return Object.keys(v).map(function (k) { return k + " " + v[k]; }).join(", ");
     return "";
@@ -238,6 +240,21 @@
       '<label class="rfield"><span>AI 답에서 가장 와닿은 것</span><textarea rows="3" oninput="setReframe(\'' + s.id + '\',\'resonate\',this.value)">' + esc(v.resonate || "") + "</textarea></label>" +
       '<label class="rfield"><span>갸우뚱하거나 동의 안 되는 것</span><textarea rows="2" oninput="setReframe(\'' + s.id + '\',\'doubt\',this.value)">' + esc(v.doubt || "") + "</textarea></label>" +
       '<label class="rfield"><span>그래서, 내 언어로 다시 쓴 요약</span><textarea rows="4" oninput="setReframe(\'' + s.id + '\',\'mine\',this.value)">' + esc(v.mine || "") + "</textarea></label>";
+  }
+  function journey(id) { if (!A[id]) A[id] = { v: ["", "", "", "", ""], where: "", surprise: "" }; return A[id]; }
+  window.setJourneyVal = function (id, i, val) { journey(id).v[i] = val; save(); };
+  window.setJourneyField = function (id, k, val) { journey(id)[k] = val; save(); };
+  function compJourney(s) {
+    var j = journey(s.id);
+    var vals = j.v.map(function (val, i) {
+      return '<input type="text" class="jval" placeholder="가치 ' + (i + 1) + '" value="' + esc(val) + '" oninput="setJourneyVal(\'' + s.id + "'," + i + ',this.value)">';
+    }).join("");
+    return (s.intro ? '<p class="hint">' + esc(s.intro) + "</p>" : "") +
+      '<div class="rowbtn"><a class="btn big journeylink" href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.linkLabel || "다녀오기") + " ↗</a></div>" +
+      (s.bring ? '<p class="hint bring">' + esc(s.bring) + "</p>" : "") +
+      '<div class="jvals">' + vals + "</div>" +
+      '<label class="rfield"><span>' + esc(s.where || "이 가치들이 내 삶 어디에서 보이나요?") + '</span><textarea rows="3" oninput="setJourneyField(\'' + s.id + '\',\'where\',this.value)">' + esc(j.where || "") + "</textarea></label>" +
+      '<label class="rfield"><span>' + esc(s.surprise || "의외였던 가치 하나, 왜 의외였나요?") + '</span><textarea rows="2" oninput="setJourneyField(\'' + s.id + '\',\'surprise\',this.value)">' + esc(j.surprise || "") + "</textarea></label>";
   }
 
   /* ---------- 화면 ---------- */
@@ -281,6 +298,7 @@
       case "meetup": body = compMeetup(s.meetup); break;
       case "promptForge": body = compPromptForge(s); break;
       case "reframe": body = compReframe(s); break;
+      case "journey": body = compJourney(s); break;
       default: body = "";
     }
     var pct = Math.round((CUR.idx + 1) / list.length * 100);
@@ -321,7 +339,7 @@
   function renderBook() {
     var title = (A.book_title && A.book_title.trim()) || "제목 없는 책";
     var author = (A.author && A.author.trim()) || "나";
-    var vals5 = (A.w3_values && A.w3_values.l2) ? A.w3_values.l2.join(" · ") : "";
+    var vals5 = (A.w3_journey && A.w3_journey.v) ? A.w3_journey.v.filter(function (x) { return x; }).join(" · ") : "";
     var radarVals = A.w4_areas || {};
     var areaItems = getWeek("w4").steps.filter(function (s) { return s.type === "sliders"; })[0].items;
     var html =

@@ -139,6 +139,12 @@ main{max-width:720px; margin:0 auto; padding:28px 20px 80px}
 .rfield span{display:block; font-size:13px; color:var(--accent-d); margin-bottom:5px; font-weight:600}
 .rfield textarea{width:100%; border:1px solid var(--line); border-radius:12px; padding:12px 14px; font:inherit; color:var(--ink); background:var(--surface); resize:vertical}
 .rfield textarea:focus{outline:none; border-color:var(--accent)}
+.journeylink{background:var(--accent-d)}
+.bring{margin-top:14px}
+.jvals{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:4px 0 14px}
+.jval{border:1px solid var(--line); border-radius:10px; padding:10px 12px; font:inherit; background:var(--surface)}
+.jval:focus{outline:none; border-color:var(--accent)}
+@media (max-width:560px){ .jvals{grid-template-columns:1fr} }
 
 /* 인쇄 */
 @media print{

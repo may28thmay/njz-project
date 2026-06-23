@@ -133,6 +133,8 @@
       case "manifest": return !!(v && String(v).trim());
       case "ikigai": return !!(v && (v.like || v.good || v.need || v.paid || v.center));
       case "priority": return !!(v && ((v.order && v.order.some(function (x) { return x && String(x).trim(); })) || (v.why && v.why.trim())));
+      case "odyssey": return !!(v && v.plans && v.plans.some(function (p) { return p.t || p.b; }));
+      case "fearSetting": return !!(v && (v.define || v.prevent || v.repair));
       default: return false;
     }
   }
@@ -264,6 +266,12 @@
       var ps = ord.map(function (x, i) { return (i + 1) + ". " + x; }).join(" / ");
       if (v.why && v.why.trim()) ps += (ps ? " " : "") + "(1순위 이유: " + v.why + ")";
       return ps;
+    }
+    if (v.plans !== undefined) {
+      return v.plans.map(function (p, i) { return (p.t || p.b) ? ((i + 1) + ") " + (p.t || "") + (p.b ? " — " + p.b : "") + (p.e ? " (설렘 " + p.e + "/5)" : "")) : ""; }).filter(Boolean).join("\n");
+    }
+    if (v.define !== undefined) {
+      return [v.define && "최악: " + v.define, v.prevent && "예방: " + v.prevent, v.repair && "복구: " + v.repair].filter(Boolean).join("\n");
     }
     if (v.l2 !== undefined) { var pick = (v.l2 && v.l2.length) ? v.l2 : (v.l1 || []); return pick.join(", "); }
     if (v.center !== undefined) return [v.center].concat(v.cells || []).filter(function (x) { return x; }).join(" / ");
@@ -400,6 +408,38 @@
       '<label class="rfield"><span>1순위가 왜 먼저인가요?</span><textarea rows="2" oninput="setPriorityWhy(\'' + s.id + '\',this.value)">' + esc(p.why || "") + "</textarea></label>";
   }
 
+  /* 5년 3시나리오 */
+  function odysseyData(id) { if (!A[id]) A[id] = { plans: [{ t: "", b: "", e: 0 }, { t: "", b: "", e: 0 }, { t: "", b: "", e: 0 }] }; return A[id]; }
+  window.setOdyssey = function (id, i, k, v) { var p = odysseyData(id).plans[i]; p[k] = (k === "e" ? +v : v); save(); if (k === "e") { var el = document.getElementById(id + "_e" + i); if (el) el.textContent = v; } };
+  function compOdyssey(s) {
+    var d = odysseyData(s.id);
+    var hint = s.hint ? '<p class="hint">' + esc(s.hint) + "</p>" : "";
+    var labels = ["지금 길이 잘 풀린 5년", "지금이 막히면 가는 플랜 B", "돈·남 시선 신경 안 써도 된다면"];
+    var blocks = d.plans.map(function (p, i) {
+      return '<div class="odyblock"><div class="odylabel">' + esc(labels[i]) + "</div>" +
+        '<input type="text" class="odyt" placeholder="한 줄 제목" value="' + esc(p.t || "") + '" oninput="setOdyssey(\'' + s.id + "'," + i + ",'t',this.value)\">" +
+        '<textarea class="odyb" rows="3" placeholder="어떤 하루하루일까요?" oninput="setOdyssey(\'' + s.id + "'," + i + ",'b',this.value)\">" + esc(p.b || "") + "</textarea>" +
+        '<div class="odyexcite"><span>설렘</span><input type="range" min="0" max="5" value="' + (p.e || 0) + '" oninput="setOdyssey(\'' + s.id + "'," + i + ",'e',this.value)\"><span class=\"odyev\" id=\"" + s.id + "_e" + i + "\">" + (p.e || 0) + "</span></div></div>";
+    }).join("");
+    return hint + '<div class="odyssey">' + blocks + "</div>";
+  }
+
+  /* 두려움 설정 */
+  function fearData(id) { if (!A[id]) A[id] = { define: "", prevent: "", repair: "" }; return A[id]; }
+  window.setFear = function (id, k, v) { fearData(id)[k] = v; save(); };
+  function compFearSetting(s) {
+    var f = fearData(s.id);
+    var hint = s.hint ? '<p class="hint">' + esc(s.hint) + "</p>" : "";
+    var box = function (k, label, ph) {
+      return '<label class="fearcell"><span>' + esc(label) + "</span>" +
+        '<textarea rows="2" placeholder="' + esc(ph) + '" oninput="setFear(\'' + s.id + '\',\'' + k + '\',this.value)">' + esc(f[k] || "") + "</textarea></label>";
+    };
+    return hint + '<div class="fearset">' +
+      box("define", "최악의 경우", "무슨 일이 벌어질까?") +
+      box("prevent", "미리 막을 방법", "조금이라도 막으려면?") +
+      box("repair", "그래도 벌어지면", "어떻게 되돌릴까?") + "</div>";
+  }
+
   /* ---------- 화면 ---------- */
   function renderHome() {
     var cards = COURSE.weeks.map(function (w) {
@@ -453,6 +493,8 @@
       case "manifest": body = compManifest(s); break;
       case "ikigai": body = compIkigai(s); break;
       case "priority": body = compPriority(s); break;
+      case "odyssey": body = compOdyssey(s); break;
+      case "fearSetting": body = compFearSetting(s); break;
       default: body = "";
     }
     var pct = Math.round((CUR.idx + 1) / list.length * 100);
@@ -507,7 +549,7 @@
       '<div class="bmcell center">' + esc(m.center || "") + "</div>" + c(4) + c(5) + c(6) + c(7) + "</div>";
   }
   function progressSummary() {
-    var ids = ["prog_w2", "prog_w3", "prog_w4", "prog_w5", "prog_w6", "prog_w7", "prog_w8"];
+    var ids = ["prog_w2", "prog_w3", "prog_w4", "prog_w5", "prog_w6", "prog_w7", "prog_w8", "prog_w9", "prog_w10", "prog_w11", "prog_w12"];
     var n = ids.filter(function (i) { return A[i] && A[i].done; }).length;
     var notes = ids.map(function (i) { return A[i] && A[i].note ? A[i].note : null; }).filter(function (x) { return x; });
     var base = n ? ("지금까지 " + n + "주 실천 체크 ✓") : "아직 체크 전이에요";
@@ -578,12 +620,29 @@
       bookBlock("미래의 내가 보낸 편지", A.manifest_w5) +
       bookBlock("내려놓고 싶은 두려움", A.manifest_w6) +
       bookBlock("1년 뒤 자랑하고 싶은 것", A.manifest_w7) +
-      bookBlock("생의 목표, 한 장면", A.manifest_w8) + "</div>" +
+      bookBlock("생의 목표, 한 장면", A.manifest_w8) +
+      bookBlock("그 미래를 위한 오늘의 한 발", A.manifest_w9) +
+      bookBlock("이미 그렇게 사는 듯한 하루", A.manifest_w10) +
+      bookBlock("곁에 두고 싶은 사람·환경", A.manifest_w11) +
+      bookBlock("3개월 전의 나에게", A.manifest_w12) + "</div>" +
       '<div class="chapter ch7">' + chapHead("", "3개월 사소한 완수", STK.leaf) +
       bookBlock("내가 정한 작은 일", (A.commit && A.commit.what) || "") +
       '<div class="bq"><h4>진행</h4><p>' + progressSummary() + "</p></div></div>" +
-      '<div class="chapter future ch8">' + chapHead("4부 · 맺음", "다음 달에 채워집니다", STK.moon) +
-      '<p class="empty">나의 실험 · 다음 1년의 나에게</p></div>' +
+
+      '<div class="chapter ch9">' + chapHead("4부", "나의 실험", STK.star) +
+      bookBlock("5년 뒤 세 갈래 길", fmtAny("w9_odyssey")) +
+      bookBlock("끌리는 방향", A.w9_direction) +
+      bookBlock("이번 달 작은 실험", A.w9_experiment) +
+      bookBlock("두려움 설정 (최악 · 예방 · 복구)", fmtAny("w9_fear")) +
+      bookBlock("한 주 실험 소감", A.w10_week) +
+      bookBlock("실험 결과", A.w11_result) +
+      bookBlock("배운 것 · 의외인 것", A.w11_learn) +
+      bookBlock("계속할 것 / 그만둘 것", A.w11_keep) + "</div>" +
+
+      '<div class="chapter ch10">' + chapHead("맺음", "다음 1년의 나에게", STK.heart) +
+      bookBlock("3개월 돌아보기", A.w12_recap) +
+      bookBlock("다음 1년의 나에게", A.w12_next1y) +
+      bookBlock("나만의 주문", A.w12_spell) + "</div>" +
       "</section>";
     document.getElementById("app").innerHTML = html;
     window.scrollTo(0, 0);

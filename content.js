@@ -313,9 +313,119 @@ const COURSE = {
           "2달차를 돌아보며, '내가 원하는 것'이 한 달 전과 어떻게 달라졌는지 한마디씩."
         ]
       }
+    },
+    {
+      id: "w9", no: 9, badge: "9주차",
+      title: "비전 · 작은 실험 설계",
+      chapter: "4부 · 나의 실험",
+      steps: [
+        { type: "intro", title: "머리에서 손발로",
+          body: "이제 마지막 달이에요. 알게 된 것·원하는 것을 '작은 실험'으로 옮겨봐요. 크게 바꾸지 않아도 돼요. 2주 안에 해볼 수 있는 작은 한 걸음이면 충분해요." },
+        { type: "progress", id: "prog_w9", title: "사소한 일, 이번 주는 어땠어요?" },
+        { type: "odyssey", id: "w9_odyssey", title: "5년 뒤, 세 갈래 길",
+          hint: "정답을 고르는 게 아니에요. 세 가지 인생을 가볍게 상상해보고, 각각 얼마나 설레는지 느껴봐요." },
+        { type: "text", id: "w9_direction", multiline: true, title: "세 길을 보고 나니, 지금 끌리는 방향은?", hint: "한 줄이면 충분해요. 섞여도 괜찮아요." },
+        { type: "text", id: "w9_experiment", multiline: true, title: "이번 달 해볼 작은 실험 하나",
+          hint: "이렇게 적어봐요 — \"나는 ___을 해보면 / ___일 것 같다 / 2주 안에 ___로 확인한다.\" 작을수록 좋아요." },
+        { type: "fearSetting", id: "w9_fear", title: "그게 조금 두렵다면",
+          hint: "두려움은 막연할 때 가장 커요. 적어두면 작아져요." },
+        { type: "manifest", id: "manifest_w9", title: "이번 주의 미래 그리기 · 한 발",
+          prompt: "그 미래로 가는 '오늘 내디딜 수 있는 가장 작은 한 발'은 무엇인가요?" }
+      ],
+      meetup: {
+        discuss: [
+          "세 갈래 길 중 가장 설렜던 시나리오는? 의외였나요?",
+          "내가 정한 작은 실험 — 서로 더 작고 쉽게 만들어줄 수 있을까요?"
+        ],
+        activity: [
+          "각자 '2주 실험'을 선언하고, 다음 모임에서 결과를 묻기로 약속해요.",
+          "서로의 두려움에 '예방·복구' 아이디어를 한 줄씩 보태줘요."
+        ]
+      }
+    },
+    {
+      id: "w10", no: 10, badge: "10주차",
+      title: "실험 실행 주간",
+      chapter: "4부 · 나의 실험",
+      steps: [
+        { type: "intro", title: "적게 쓰고, 많이 살기",
+          body: "이번 주는 채우는 칸이 적어요. 대신 정한 실험을 실제로 해보는 주예요. 완벽하지 않아도, 해본 것 자체가 데이터예요." },
+        { type: "progress", id: "prog_w10", title: "사소한 일, 이번 주는 어땠어요?" },
+        { type: "dailyLog", id: "w10_log", title: "실험 기록 (한 주)",
+          hint: "실험한 날만 적어도 돼요. 안 한 날은 빈칸.",
+          fields: [
+            { key: "date", label: "날짜" },
+            { key: "did", label: "오늘 해본 것" },
+            { key: "feel", label: "하고 난 느낌" }
+          ] },
+        { type: "text", id: "w10_week", multiline: true, title: "한 주 살아보니 — 한 줄", hint: "잘 됐든 안 됐든 솔직하게." },
+        { type: "manifest", id: "manifest_w10", title: "이번 주의 미래 그리기 · 이미",
+          prompt: "그 미래의 내가 이미 된 것처럼 오늘 하루를 산다면, 어떤 모습일까요?" }
+      ],
+      meetup: {
+        discuss: [
+          "실험, 해보니 어땠어요? 예상과 달랐던 점은?",
+          "막힌 데가 있다면 무엇이 막았나요?"
+        ],
+        activity: [
+          "각자 실험 중간 보고 — 응원과 작은 팁만, 평가는 없기.",
+          "한 주 더 이어갈지, 바꿀지 각자 정해요."
+        ]
+      }
+    },
+    {
+      id: "w11", no: 11, badge: "11주차",
+      title: "실험 회고 · 책 점검",
+      chapter: "4부 · 나의 실험",
+      steps: [
+        { type: "intro", title: "해보고 알게 된 것",
+          body: "실험의 목적은 성공이 아니라 '나에 대한 데이터'예요. 맞았든 틀렸든, 한 걸음 더 나를 알게 됐어요." },
+        { type: "progress", id: "prog_w11", title: "사소한 일, 이번 주는 어땠어요?" },
+        { type: "text", id: "w11_result", multiline: true, title: "실험 결과 — 가설은 맞았나요?", hint: "무슨 일이 있었는지 그대로." },
+        { type: "text", id: "w11_learn", multiline: true, title: "배운 것 · 의외였던 것", hint: "나에 대해 새로 안 것." },
+        { type: "text", id: "w11_keep", multiline: true, title: "계속할 것 / 그만둘 것", hint: "이번 실험에서 건진 것, 내려놓을 것." },
+        { type: "intro", title: "내 책 한 번 훑어보기",
+          body: "지금까지 쓴 '내 책'을 위쪽 메뉴 '내 책'에서 펼쳐봐요. 비어 있어 아쉬운 칸이 있으면 한두 개만 채워와요. 다음 주에 책을 완성해요." },
+        { type: "manifest", id: "manifest_w11", title: "이번 주의 미래 그리기 · 곁",
+          prompt: "그 미래로 가는 길에 곁에 두고 싶은 사람이나 환경은 누구·무엇인가요?" }
+      ],
+      meetup: {
+        discuss: [
+          "실험에서 가장 크게 배운 것 하나는?",
+          "내 책을 다시 보니 마음에 드는 페이지는?"
+        ],
+        activity: [
+          "각자 실험 회고를 나누고, 서로 '그게 너다운 발견'을 짚어줘요.",
+          "다음 주 완성 모임 준비 — 낭독할 페이지 하나씩 골라오기."
+        ]
+      }
+    },
+    {
+      id: "w12", no: 12, badge: "12주차",
+      title: "완성 · 맺음",
+      chapter: "맺음",
+      steps: [
+        { type: "intro", title: "마지막 장을 덮으며",
+          body: "12주를 걸어왔어요. 빈칸이 있어도 괜찮아요 — 채운 만큼이 지금의 나예요. 이제 책을 닫는 글을 써요." },
+        { type: "progress", id: "prog_w12", title: "사소한 일, 마지막 체크 — 해냈나요?" },
+        { type: "text", id: "w12_recap", multiline: true, title: "3개월 돌아보기 — 가장 큰 변화 / 가장 좋았던 순간", hint: "크지 않아도 돼요. 작게 달라진 것도." },
+        { type: "text", id: "w12_next1y", multiline: true, title: "다음 1년의 나에게", hint: "1주차에 쓴 '3개월 뒤의 나에게'를 떠올리며." },
+        { type: "text", id: "w12_spell", title: "나만의 주문 — 흔들릴 때 꺼낼 한 문장", placeholder: "예: 나는 천천히, 그러나 나답게 간다.", hint: "이 책 전체를 한 문장으로." },
+        { type: "manifest", id: "manifest_w12", title: "이번 주의 미래 그리기 · 편지 닫기",
+          prompt: "3개월 전의 나에게, 지금의 내가 한마디 건넨다면?" }
+      ],
+      meetup: {
+        discuss: [
+          "12주 전과 지금, 가장 달라진 한 가지는?",
+          "'나만의 주문'을 서로 나눠요."
+        ],
+        activity: [
+          "각자 책에서 한 페이지를 낭독해요 — 듣기만, 박수로.",
+          "서로에게 '이 사람의 3개월'을 한 문장 선물로 써줘요.",
+          "각자 '내 책'을 PDF로 저장 — 완성을 축하해요."
+        ]
+      }
     }
   ],
-  locked: [
-    { badge: "3달차", title: "파고들어 책으로", desc: "비전을 세우고 작게 실험해 완성해요 — 곧 열려요" }
-  ]
+  locked: []
 };

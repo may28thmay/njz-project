@@ -123,22 +123,11 @@ const COURSE = {
           ] },
         { type: "reframe", id: "w2_reframe", title: "AI와 함께 곱씹기 · 내 걸로 만들기",
           hint: "AI 답을 그대로 믿지 말고, 내 걸로 소화하는 게 핵심이에요. AI는 내가 준 것만 비춰줄 뿐이에요." },
-        { type: "dailyLog", id: "w2_log", title: "주간 채움 기록 (한 주 과제)",
-          hint: "하루 한 번, 편한 때 적어요. 못 쓴 칸은 그냥 빈칸. 다 채우는 게 목표가 아니에요.",
-          fields: [
-            { key: "date", label: "날짜" },
-            { key: "plus", label: "나를 살린 것" },
-            { key: "minus", label: "나를 빨아먹은 것" },
-            { key: "pull", label: "문득 끌린 것" },
-            { key: "delay", label: "미루거나 피한 것" }
-          ] },
-        { type: "text", id: "w2_summary", multiline: true, title: "정리 — 나는 이렇게 작동한다", hint: "AI와 곱씹은 내용까지 떠올려 3~4문장으로. 이게 책 1부의 핵심이 돼요." },
         { type: "manifest", id: "manifest_w2", title: "이번 주의 미래 그리기",
           prompt: "그 미래 속 나의 '평범한 하루'를 아침부터 밤까지 그려봐요. 어떤 리듬으로 살고 있나요?" }
       ],
       meetup: {
         discuss: [
-          "채움 기록에서 반복해 나를 살린 것 / 빨아먹은 것은?",
           "나를 움직이는 조건과, 절대 안 움직이는 조건 — 의외인 게 있었나요?",
           "잘 안 되던 일이 '의지'가 아니라 '작동방식'이라면, 나를 어떻게 다르게 도울 수 있을까요?"
         ],
@@ -165,7 +154,6 @@ const COURSE = {
           intro: "지금까지 1부에 적은 내용을 모아, AI에게 물어볼 프롬프트를 만들었어요. 복사해서 ChatGPT나 Claude에 붙여넣고, 돌아온 답을 다음 장에서 곱씹어요.",
           system: "너는 따뜻하지만 솔직한 자기탐구 코치야. 아래는 내가 나를 알아가며 적은 1부 기록이야. (1) 여기서 보이는 나의 강점과 작동방식 패턴, (2) 내가 스스로 과소평가하는 것 같은 점, (3) 내가 더 깊이 생각해볼 질문 3가지를 짚어줘. 단정짓지 말고, 내가 곱씹을 수 있게 말해줘.",
           collect: [
-            { label: "나는 이렇게 작동한다", from: "w2_summary" },
             { label: "나를 움직이는 상황", from: "w2_drive" },
             { label: "절대 안 움직이는 상황", from: "w2_never" },
             { label: "시간 가는 줄 모르는 일", from: "w2_flow" },

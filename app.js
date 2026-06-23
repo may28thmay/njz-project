@@ -375,7 +375,7 @@
     if (!A[id]) A[id] = { order: [], why: "" };
     var p = A[id];
     if (!p.order || !p.order.length) {
-      var src = (A.w3_journey && A.w3_journey.v) ? A.w3_journey.v.filter(function (x) { return x && x.trim(); }) : [];
+      var src = (A.w1_journey && A.w1_journey.v) ? A.w1_journey.v.filter(function (x) { return x && x.trim(); }) : [];
       p.order = src.slice();
     }
     return p;
@@ -558,7 +558,7 @@
   function renderBook() {
     var title = (A.book_title && A.book_title.trim()) || "제목 없는 책";
     var author = (A.author && A.author.trim()) || "나";
-    var vals5 = (A.w3_journey && A.w3_journey.v) ? A.w3_journey.v.filter(function (x) { return x; }).join(" · ") : "";
+    var vals5 = (A.w1_journey && A.w1_journey.v) ? A.w1_journey.v.filter(function (x) { return x; }).join(" · ") : "";
     var radarVals = A.w4_areas || {};
     var areaItems = getWeek("w4").steps.filter(function (s) { return s.type === "sliders"; })[0].items;
     var html =
@@ -570,7 +570,7 @@
       bookBlock("이 책을 시작하는 지금의 나는,", A.w1_start_mind) +
       bookBlock("요즘 가장 답답하거나 궁금한 것", A.w1_curious) +
       bookBlock("내가 답을 찾고 싶은 질문", A.w1_question) +
-      bookBlock("3개월 뒤의 나에게", A.w1_letter) + "</div>" +
+      bookBlock("나를 관통하는 가치 5", vals5) + "</div>" +
 
       '<div class="chapter ch2">' + chapHead("1부", "나의 작동방식", STK.sprout) +
       bookBlock("나는 이렇게 작동한다", A.w2_summary) +
@@ -578,14 +578,14 @@
       bookBlock("금방 흩어질 때", fmtChoices("w2_focus_break")) +
       bookBlock("시간 가는 줄 모르고 빠져드는 일", A.w2_flow) +
       bookBlock("에너지가 가장 좋은 시간대", fmtChoices("w2_energy_peak")) +
-      bookBlock("충전되는 것 / 방전되는 것", A.w2_recharge) + "</div>" +
+      bookBlock("충전되는 것 / 방전되는 것", A.w2_recharge) +
+      bookBlock("AI와 곱씹어 다시 쓴 작동방식", (A.w2_reframe && A.w2_reframe.mine) || "") + "</div>" +
 
       '<div class="chapter ch3">' + chapHead("", "나의 강점 지도", STK.star) +
-      bookBlock("나를 관통하는 가치 5", vals5) +
       bookBlock("남들은 어려운데 나는 쉬운 일", A.w3_easy) +
       bookBlock("사람들이 고마워하는 것", A.w3_thank) +
       bookBlock("내가 잘 되는 환경", fmtChoices("w3_env")) +
-      bookBlock("AI와 곱씹어 다시 쓴 1부", (A.w3_reframe && A.w3_reframe.mine) || "") + "</div>" +
+      bookBlock("AI와 곱씹어 다시 쓴 강점", (A.w3_reframe && A.w3_reframe.mine) || "") + "</div>" +
 
       '<div class="chapter ch4">' + chapHead("2부", "나의 현재 지도", STK.cloud) +
       '<div class="bq"><h4>지금 내 삶의 영역</h4><svg class="radar" viewBox="0 0 220 220">' + radarInner(areaItems, radarVals) + "</svg></div>" +

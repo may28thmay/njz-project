@@ -19,13 +19,19 @@ const COURSE = {
       chapter: "서문",
       steps: [
         { type: "intro", title: "서문을 시작해요",
-          body: "이 책의 첫 페이지를 여는 시간이에요. 멋있게 쓰지 않아도 괜찮아요. 지금의 솔직한 마음을 그대로 담아보세요." },
+          body: "이 책의 첫 페이지를 여는 시간이에요. 멋있게 쓰지 않아도 괜찮아요. 지금의 솔직한 마음을 그대로 담아보세요. 끝에는 「나의 가치 여정」에 다녀와, 나를 관통하는 가치도 만나볼 거예요." },
         { type: "text", id: "author", title: "지은이", hint: "이름 또는 닉네임. 표지에 들어가요.", placeholder: "예: 유림" },
         { type: "text", id: "book_title", title: "내 책의 제목", hint: "가제여도 괜찮아요. 마지막에 바꿀 수 있어요.", placeholder: "예: 나를 알아가는 90일" },
         { type: "text", id: "w1_start_mind", multiline: true, title: "이 책을 시작하는 지금의 나는,", hint: "요즘 마음, 일, 일상의 한 장면." },
         { type: "text", id: "w1_curious", multiline: true, title: "요즘 가장 답답하거나 궁금한 것", hint: "회사 얘기 말고, 진짜 궁금한 '나'에 대한 것." },
         { type: "text", id: "w1_question", title: "이 코스에서 답을 찾고 싶은 질문 하나", placeholder: "\"______________________?\"", hint: "3개월 내내 곁에 둘 질문이에요." },
-        { type: "text", id: "w1_letter", multiline: true, title: "3개월 뒤의 나에게", hint: "짧아도 좋아요. 한 문장이면 충분." },
+        { type: "journey", id: "w1_journey", title: "나의 가치 여정 다녀오기",
+          url: "https://word-journey.site/",
+          intro: "이 책의 출발점이에요. 아래 버튼으로 「나의 가치 여정」에 다녀와요. 천천히 단어를 골라 좁히면, 지금 나를 관통하는 가치 다섯 개가 남아요.",
+          linkLabel: "나의 가치 여정 다녀오기",
+          bring: "다녀와서, 거기서 나온 가치 다섯 개를 여기에 옮겨 적어요.",
+          where: "이 가치들이 내 일상 어디에서 보이나요? (혹은 어디서 안 지켜지나요?)",
+          surprise: "다섯 개 중 의외였던 가치 하나 — 왜 의외였나요?" },
         { type: "commit", id: "commit", title: "3개월간 반드시 해낼 사소한 일",
           hint: "딱 하나만. 작아도 좋아요(예: 사진 정리, 매일 물 한 잔, 책 한 권). 12주 뒤 '이건 해냈다' 하나면 충분해요. 매주 가볍게 체크할 거예요." },
         { type: "manifest", id: "manifest_w1", title: "이번 주의 미래 그리기",
@@ -34,12 +40,13 @@ const COURSE = {
       meetup: {
         discuss: [
           "요즘의 나를 날씨로 표현하면? 한 줄 이유와 함께.",
-          "내가 이 코스에서 답을 찾고 싶은 질문은 무엇인가요?"
+          "내가 이 코스에서 답을 찾고 싶은 질문은 무엇인가요?",
+          "가치 여정에서 남은 다섯 가치 중, 의외였던 것은?"
         ],
         activity: [
           "각자 서문을 2~3문장 낭독 — 피드백 없이 듣기만 해요.",
-          "각자 정한 '3개월간 해낼 사소한 일'을 공유하고, 매주 서로 안부 묻기로 약속해요.",
-          "4주 모임 요일·시간을 정하고, 다음 주 진행자를 뽑아요."
+          "각자 가치 다섯 개를 공유하고, 왜 그게 남았는지 한마디씩 나눠요.",
+          "각자 정한 '3개월간 해낼 사소한 일'을 공유하고, 매주 서로 안부 묻기로 약속해요."
         ]
       }
     },
@@ -49,7 +56,7 @@ const COURSE = {
       chapter: "1부 · 나의 작동방식",
       steps: [
         { type: "intro", title: "나는 어떻게 작동하나",
-          body: "이건 진단이 아니에요. 잘 안 되는 게 '의지' 문제가 아니라 원래 내 작동방식일 수 있어요. 그걸 알면 나를 덜 탓하고 더 잘 쓸 수 있어요." },
+          body: "이건 진단이 아니에요. 잘 안 되는 게 '의지' 문제가 아니라 원래 내 작동방식일 수 있어요. 그걸 알면 나를 덜 탓하고 더 잘 쓸 수 있어요. 이번 주부터, 쓴 걸 AI가 정리해주고 그걸 다시 내 걸로 곱씹는 시간도 가져요." },
         { type: "progress", id: "prog_w2", title: "사소한 일, 이번 주는 어땠어요?" },
         { type: "choices", id: "w2_focus_when", multi: true, allowOther: true, title: "나는 언제 집중이 잘 되나요?",
           options: ["마감이 닥쳤을 때","관심 있는 주제일 때","혼자 조용할 때","적당한 소음(카페 등)","몸을 움직인 뒤","이른 아침","늦은 밤","마음이 편할 때"] },
@@ -72,6 +79,18 @@ const COURSE = {
             { key: "delay", label: "미루거나 피한 것" }
           ] },
         { type: "text", id: "w2_summary", multiline: true, title: "정리 — 나는 이렇게 작동한다", hint: "위 답을 훑고 3~4문장으로. 이게 책 1부의 핵심이 돼요." },
+        { type: "promptForge", id: "w2_ai", title: "AI와 함께 곱씹기 · 프롬프트 만들기",
+          intro: "여기까지 적은 '나의 작동방식'을 모아, AI에게 물어볼 프롬프트를 만들었어요. 복사해서 ChatGPT나 Claude에 붙여넣고, 돌아온 답을 아래에서 곱씹어요.",
+          system: "너는 따뜻하지만 솔직한 자기탐구 코치야. 아래는 내가 나를 관찰하며 적은 작동방식 기록이야. (1) 여기서 보이는 나의 작동 패턴(언제 잘 되고 언제 흩어지는지, 무엇이 나를 움직이는지), (2) 내가 스스로 놓치고 있는 것 같은 점, (3) 내가 더 깊이 생각해볼 질문 3가지를 짚어줘. 단정짓지 말고, 내가 곱씹을 수 있게 말해줘.",
+          collect: [
+            { label: "나는 이렇게 작동한다", from: "w2_summary" },
+            { label: "나를 움직이는 상황", from: "w2_drive" },
+            { label: "절대 안 움직이는 상황", from: "w2_never" },
+            { label: "시간 가는 줄 모르는 일", from: "w2_flow" },
+            { label: "나를 관통하는 가치", from: "w1_journey" }
+          ] },
+        { type: "reframe", id: "w2_reframe", title: "AI와 함께 곱씹기 · 내 걸로 만들기",
+          hint: "AI 답을 그대로 믿지 말고, 내 걸로 소화하는 게 핵심이에요. AI는 내가 준 것만 비춰줄 뿐이에요." },
         { type: "manifest", id: "manifest_w2", title: "이번 주의 미래 그리기",
           prompt: "그 미래 속 나의 '평범한 하루'를 아침부터 밤까지 그려봐요. 어떤 리듬으로 살고 있나요?" }
       ],
@@ -88,19 +107,12 @@ const COURSE = {
     },
     {
       id: "w3", no: 3, badge: "3주차",
-      title: "강점 · 가치",
+      title: "강점",
       chapter: "1부 · 나의 강점 지도",
       steps: [
-        { type: "intro", title: "나를 움직이는 가치와 강점",
-          body: "이번 주는 「나의 가치 여정」을 직접 다녀오는 것부터 시작해요. 단어를 고르고 좁히다 보면 지금의 나를 관통하는 가치가 남아요. 그다음 그 가치를 내 삶으로 끌어와 곱씹어요." },
+        { type: "intro", title: "나의 강점 지도",
+          body: "지난주에 만난 가치를 곁에 두고, 이번 주는 강점을 길어올려요. 남들은 어려워하는데 나는 쉬운 일, 사람들이 자주 고마워하는 것 — 거기에 내 강점이 숨어 있어요. 당연하게 여겨 안 쓰던 강점을 찾아봐요." },
         { type: "progress", id: "prog_w3", title: "사소한 일, 이번 주는 어땠어요?" },
-        { type: "journey", id: "w3_journey", title: "나의 가치 여정 다녀오기",
-          url: "https://word-journey.site/",
-          intro: "아래 버튼으로 「나의 가치 여정」에 다녀와요. 천천히 단어를 골라 좁히면, 지금 나를 관통하는 가치 다섯 개가 남아요.",
-          linkLabel: "나의 가치 여정 다녀오기",
-          bring: "다녀와서, 거기서 나온 가치 다섯 개를 여기에 옮겨 적어요.",
-          where: "이 가치들이 내 일상 어디에서 보이나요? (혹은 어디서 안 지켜지나요?)",
-          surprise: "다섯 개 중 의외였던 가치 하나 — 왜 의외였나요?" },
         { type: "text", id: "w3_easy", multiline: true, title: "남들은 어려워하는데 나는 비교적 쉬운 일", hint: "사소해 보여도 괜찮아요." },
         { type: "text", id: "w3_thank", multiline: true, title: "사람들이 나에게 자주 부탁하거나 고마워하는 것" },
         { type: "choices", id: "w3_env", multi: true, allowOther: true, title: "내가 잘 되는 환경",
@@ -115,7 +127,7 @@ const COURSE = {
             { label: "나를 움직이는 상황", from: "w2_drive" },
             { label: "절대 안 움직이는 상황", from: "w2_never" },
             { label: "시간 가는 줄 모르는 일", from: "w2_flow" },
-            { label: "나를 관통하는 가치", from: "w3_journey" },
+            { label: "나를 관통하는 가치", from: "w1_journey" },
             { label: "남들은 어려운데 나는 쉬운 일", from: "w3_easy" },
             { label: "잘 되는 환경 / 세팅", from: "w3_setup" }
           ] },
@@ -126,12 +138,10 @@ const COURSE = {
       ],
       meetup: {
         discuss: [
-          "가치 여정에서 나온 다섯 가치 중, 의외였던 것은?",
           "강점인데 내가 당연하게 여겨서 안 쓰고 있는 건 없나요?",
           "친구가 써준 단어 중, 내가 전혀 몰랐던 나의 강점은?"
         ],
         activity: [
-          "각자 「나의 가치 여정」 결과(다섯 가치)를 공유하고, 왜 그게 남았는지 한마디씩.",
           "각자 다른 3명에게 '이 친구 하면 떠오르는 강점 단어 3개'를 써서 전달해요.",
           "받은 단어 vs 내가 쓴 강점을 비교 — 갭이 큰 지점 하나를 이야기해요."
         ]
@@ -278,7 +288,7 @@ const COURSE = {
         { type: "text", id: "w8_epitaph", optional: true, multiline: true, title: "사람들이 나를 어떻게 기억하면 좋을까요?", hint: "먼 훗날, 한 문장으로 남는다면." },
         { type: "text", id: "w8_lifegoal", multiline: true, title: "지금 떠오르는 '생의 목표' 하나", hint: "거창하지 않아도 돼요. 지금 마음에 가장 크게 걸리는 것." },
         { type: "priority", id: "w8_priority", title: "내 가치, 무엇이 먼저일까?",
-          hint: "3주차 가치 여정에서 남은 다섯 가치예요. ↑↓로 지금 나에게 중요한 순서대로 옮겨봐요. 그리고 1순위가 왜 먼저인지 한 줄 적어요." },
+          hint: "1주차 가치 여정에서 남은 다섯 가치예요. ↑↓로 지금 나에게 중요한 순서대로 옮겨봐요. 그리고 1순위가 왜 먼저인지 한 줄 적어요." },
         { type: "mandala", id: "w8_goal_mandala", title: "생의 목표 만다라트",
           centerLabel: "내 생의 목표",
           hint: "가운데에 목표를 적고, 둘레 8칸에 그걸 향한 작은 행동·조각을 채워요. 다 안 채워도 괜찮아요." },
@@ -409,7 +419,7 @@ const COURSE = {
           body: "12주를 걸어왔어요. 빈칸이 있어도 괜찮아요 — 채운 만큼이 지금의 나예요. 이제 책을 닫는 글을 써요." },
         { type: "progress", id: "prog_w12", title: "사소한 일, 마지막 체크 — 해냈나요?" },
         { type: "text", id: "w12_recap", multiline: true, title: "3개월 돌아보기 — 가장 큰 변화 / 가장 좋았던 순간", hint: "크지 않아도 돼요. 작게 달라진 것도." },
-        { type: "text", id: "w12_next1y", multiline: true, title: "다음 1년의 나에게", hint: "1주차에 쓴 '3개월 뒤의 나에게'를 떠올리며." },
+        { type: "text", id: "w12_next1y", multiline: true, title: "다음 1년의 나에게", hint: "1주차에 적은 '찾고 싶은 질문'을 떠올리며." },
         { type: "text", id: "w12_spell", title: "나만의 주문 — 흔들릴 때 꺼낼 한 문장", placeholder: "예: 나는 천천히, 그러나 나답게 간다.", hint: "이 책 전체를 한 문장으로." },
         { type: "manifest", id: "manifest_w12", title: "이번 주의 미래 그리기 · 편지 닫기",
           prompt: "3개월 전의 나에게, 지금의 내가 한마디 건넨다면?" }

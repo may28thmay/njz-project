@@ -671,6 +671,7 @@
       bookBlock("도움이 필요할 때의 나", fmtChoices("w6_boundary")) +
       bookBlock("죽기 전 해보고 싶은 것", A.w6_challenge) +
       bookBlock("깨고 싶은 두려움 · 한계", A.w6_fear) +
+      bookBlock("AI와 곱씹어 다시 본 나의 관계", (A.w6_reframe && A.w6_reframe.mine) || "") +
       bookBlock("일에서 원하는 것", A.w7_next_work) +
       bookBlock("네 가지가 만나는 곳", fmtAny("w7_ikigai")) +
       bookBlock("3 · 7 · 10년 후의 나", A.w8_futures) +

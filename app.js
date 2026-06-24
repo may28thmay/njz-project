@@ -648,12 +648,14 @@
 
       '<div class="chapter ch3">' + chapHead("", "나의 강점 지도", STK.star) +
       bookBlock("나의 대표 강점", fmtAny("w3_strengths")) +
+      bookBlock("강점이 드러난 순간", A.w3_evidence) +
       bookBlock("남들은 어려운데 나는 쉬운 일", A.w3_easy) +
       bookBlock("사람들이 고마워하는 것", A.w3_thank) +
-      bookBlock("강점이 가장 빛나는 조건", fmtChoices("w3_shine")) +
+      bookBlock("주변이 본 나의 강점", A.w3_others) +
+      bookBlock("강점의 갭에서 느낀 것", A.w3_gap) +
+      bookBlock("강점이 드러나는 양식", fmtChoices("w3_shine")) +
       bookBlock("강점의 다른 얼굴 (과사용)", fmtChoices("w3_shadow")) +
-      bookBlock("내가 잘 되는 환경", fmtChoices("w3_env")) +
-      bookBlock("이번 주 강점 실험", A.w3_strength_use) +
+      bookBlock("강점을 더 키우는 실험", A.w3_strength_use) +
       bookBlock("AI와 곱씹어 다시 쓴 강점", (A.w3_reframe && A.w3_reframe.mine) || "") + "</div>" +
 
       '<div class="chapter ch4">' + chapHead("2부", "나의 현재 지도", STK.cloud) +

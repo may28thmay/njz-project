@@ -22,8 +22,8 @@ const COURSE = {
           body: "이 책의 첫 페이지를 여는 시간이에요. 멋있게 쓰지 않아도 괜찮아요. 지금의 솔직한 마음을 그대로 담아보세요. 끝에는 「나의 가치 여정」에 다녀와, 나를 관통하는 가치도 만나볼 거예요.\n\n정답도, 잘 쓴 글도 필요 없어요. 그냥 지금의 나를 슬쩍 적어두는 거예요. 빈 칸은 건너뛰어도 돼요." },
         { type: "text", id: "author", title: "지은이", hint: "이름 또는 닉네임. 표지에 들어가요.", placeholder: "예: 유림" },
         { type: "text", id: "book_title", title: "내 책의 제목", hint: "가제여도 괜찮아요. 마지막에 바꿀 수 있어요.", placeholder: "예: 나를 알아가는 90일" },
-        { type: "text", id: "w1_start_mind", multiline: true, title: "이 책을 시작하는 지금의 나는,", hint: "요즘 마음, 일, 일상의 한 장면." },
-        { type: "text", id: "w1_curious", multiline: true, title: "요즘 가장 답답하거나 궁금한 것",
+        { type: "text", id: "w1_start_mind", multiline: true, optional: true, title: "이 책을 시작하는 지금의 나는,", hint: "요즘 마음, 일, 일상의 한 장면." },
+        { type: "text", id: "w1_curious", multiline: true, optional: true, title: "요즘 가장 답답하거나 궁금한 것",
           placeholder: "예: 나는 왜 쉬는 날에도 마음이 안 편할까?",
           hint: "회사 얘기 말고, 진짜 '나'에 대한 거예요. 예: 나는 왜 늘 시작만 하고 못 끝낼까 · 나는 뭘 할 때 진짜 즐겁지 · 쉬는 날인데 왜 더 불안할까 · 남들 다 하는데 나만 안 풀리는 느낌은 뭘까" },
         { type: "text", id: "w1_question", title: "이 코스에서 답을 찾고 싶은 질문 하나",
@@ -55,12 +55,12 @@ const COURSE = {
             doubtLabel: "갸우뚱하거나 동의 안 되는 것",
             mineLabel: "그래서, 나를 한 문장으로 다시 쓴다면",
             mineHint: "이 한 문장이 책에 실려요." } },
-        { type: "text", id: "w1_value_kept", multiline: true, title: "끝까지 망설이다 뺀 가치",
+        { type: "text", id: "w1_value_kept", multiline: true, optional: true, title: "끝까지 망설이다 뺀 가치",
           hint: "다섯 개로 추리며 마지막까지 고민하다 끝내 뺀 가치가 있나요? 무엇이고, 왜 아까웠나요? 그게 지금 '2순위의 나'일 수 있어요." },
         { type: "text", id: "w1_value_tension", optional: true, multiline: true, title: "원하는 모습과, 거기 가는 힘",
           hint: "내가 바라는 '상태'(편안함·행복 같은)와, 거기 가려고 스스로에게 요구하는 '힘'(부지런함·노력 같은)이 부딪힐 때가 있나요?" },
         { type: "commit", id: "commit", title: "3개월간 반드시 해낼 사소한 일",
-          hint: "딱 하나만. 작아도 좋아요(예: 사진 정리, 매일 물 한 잔, 책 한 권). 12주 뒤 '이건 해냈다' 하나면 충분해요. 매주 가볍게 체크할 거예요." },
+          hint: "딱 하나만. 작아도 좋아요(예: 사진 정리, 매일 물 한 잔, 책 한 권). 13주 뒤 '이건 해냈다' 하나면 충분해요. 매주 가볍게 체크할 거예요." },
         { type: "manifest", id: "manifest_w1", title: "이번 주의 미래 그리기",
           prompt: "1년 뒤, 내가 가장 바라는 한 장면을 그려봐요. 어디서, 누구와, 무엇을 하고 있나요? 구체적일수록 좋아요." }
       ],
@@ -173,14 +173,19 @@ const COURSE = {
             "공감","경청","배려","친화력","화합","신뢰주기","가르치기","돌봄",
             "주도성","결단력","자신감","동기부여","표현력","설득","용기","비전",
             "긍정","유머","감사","진정성","겸손","차분함","열정","공정함"] },
-        { type: "text", id: "w3_evidence", multiline: true, title: "그 강점이 '실제로' 드러난 순간 — 강점마다 한 장면씩",
-          hint: "고른 대표 강점이 최근(아니어도 좋아요) 일·관계·일상에서 나온 장면을 짧게. 추상적인 단어를 내 실제 경험에 붙이는 단계예요." },
-        { type: "text", id: "w3_easy", multiline: true, title: "남들은 어려워하는데 나는 비교적 쉬운 일", hint: "사소해 보여도 괜찮아요. 당연하게 여기는 것일수록 숨은 강점일 때가 많아요." },
-        { type: "text", id: "w3_thank", multiline: true, title: "사람들이 나에게 자주 부탁하거나 고마워하는 것" },
-        { type: "text", id: "w3_others", multiline: true, title: "가까운 사람은 내 강점을 뭐라고 볼까요?",
-          hint: "한 명에게라도 '내 강점이 뭐 같아?' 실제로 물어보면 더 좋아요. 어렵다면 그 사람이라면 뭐랄지 떠올려 적어요." },
-        { type: "text", id: "w3_gap", multiline: true, title: "내가 고른 강점 vs 사람들이 본 강점 — 그 '갭'에서 뭘 느꼈나요?",
-          hint: "겹치는 것 = 확인된 강점 / 나만 고른 것 = 나만 아는 강점 / 남만 본 것 = 내가 몰랐던 강점일 수 있어요." },
+        { type: "text", id: "w3_evidence", multiline: true, optional: true, title: "그 강점이 '실제로' 드러난 순간 — 강점마다 한 장면씩",
+          hint: "여유 있으면 한 줄씩. 고른 대표 강점이 최근(아니어도 좋아요) 일·관계·일상에서 나온 장면을. 추상적인 단어를 내 경험에 붙이는 단계예요." },
+        { type: "text", id: "w3_easy", multiline: true, optional: true, title: "남들은 어려워하는데 나는 비교적 쉬운 일", hint: "사소해 보여도 괜찮아요. 당연하게 여기는 것일수록 숨은 강점일 때가 많아요." },
+        { type: "text", id: "w3_thank", multiline: true, optional: true, title: "사람들이 나에게 자주 부탁하거나 고마워하는 것" },
+        { type: "choices", id: "w3_others", multi: true, allowOther: true, title: "가까운 사람이라면, 내 강점으로 뭘 골라줄까요?",
+          hint: "한 명에게라도 '내 강점이 뭐 같아?' 실제로 물어보면 더 좋아요. 어렵다면 그 사람이 고를 것 같은 걸 골라요.",
+          options: ["호기심","배움","통찰","분석력","창의성","전략적사고","신중함","큰그림",
+            "추진력","끈기","책임감","성실함","집중력","정리정돈","마무리","회복탄력",
+            "공감","경청","배려","친화력","화합","신뢰주기","가르치기","돌봄",
+            "주도성","결단력","자신감","동기부여","표현력","설득","용기","비전",
+            "긍정","유머","감사","진정성","겸손","차분함","열정","공정함"] },
+        { type: "choices", id: "w3_gap", multi: false, optional: true, title: "내가 고른 강점 vs 사람들이 본 강점 — 어떤가요?",
+          options: ["거의 같다","내가 나를 더 후하게 본다","남이 나를 더 후하게 본다","몰랐던 강점을 발견했다"] },
         { type: "choices", id: "w3_shine", multi: false, title: "내 강점은 주로 어떻게 드러나요?",
           options: ["혼자 깊이 파고들 때","사람들 사이에서","새로운 걸 만들 때","문제를 풀 때","끝까지 해낼 때"] },
         { type: "choices", id: "w3_shadow", multi: false, title: "남들이 가끔 '너무 ~하다'고 하는 내 모습은?",
@@ -231,23 +236,37 @@ const COURSE = {
       chapter: "2부 · 나의 현재 지도",
       steps: [
         { type: "intro", title: "지금의 나를 지도로",
-          body: "지금의 나를 인생 영역별로 그려봐요. 평가가 아니라 현재 위치예요. 점수가 낮은 영역이 나쁜 게 아니라, 지금 거기 있다는 뜻일 뿐이에요." },
+          body: "이번 주는 거의 고르기만 하면 돼요. 삶을 여덟 영역으로 나눠, 지금 각 영역이 어떤지 골라요. 고르는 대로 아래 레이더 그림이 자동으로 그려져요. 평가가 아니라 지금 위치를 비추는 거예요 — 낮은 영역이 나쁜 게 아니라, 지금 거기 있다는 뜻일 뿐이에요." },
         { type: "progress", id: "prog_w4", title: "사소한 일, 이번 주는 어땠어요?" },
-        { type: "sliders", id: "w4_areas", title: "지금 내 삶의 영역들 (0~10)",
-          hint: "직감으로 슬라이더를 옮겨요. 옮기면 아래 그림이 함께 변해요.",
-          items: ["돈","건강","일","마음","관계","일상","배움","놀이"] },
-        { type: "text", id: "w4_area_note", multiline: true, title: "각 영역, 지금 한 줄씩",
-          hint: "돈·건강·일·마음·관계·일상·배움·놀이 — 마음 가는 영역에 '지금 어떤지' 한 줄씩." },
-        { type: "mandala", id: "w4_mandala", title: "채우고 싶은 영역 만다라트",
-          centerLabel: "지금 가장 채우고 싶은 영역",
-          hint: "가운데에 한 가지를 적고, 둘레 8칸에 떠오르는 것(작은 행동·아이디어)을 채워요. 다 안 채워도 괜찮아요." },
+        { type: "assess", id: "w4_areas", title: "여덟 영역, 지금 얼마나 채워져 있나요?",
+          hint: "직감으로 골라요. 고르면 아래 레이더가 함께 변해요. 정답은 없어요.",
+          scale: ["거의 비었다","조금","보통","꽤","가득"],
+          areas: [
+            { label: "돈·경제", q: "요즘 돈·경제 상황, 얼마나 안정적이라 느껴요?" },
+            { label: "건강·몸", q: "요즘 몸·체력 컨디션에 얼마나 만족해요?" },
+            { label: "일·커리어", q: "지금 하는 일, 얼마나 만족스럽고 잘 풀려요?" },
+            { label: "마음·정서", q: "요즘 마음 상태, 얼마나 편안하고 단단해요?" },
+            { label: "관계", q: "지금 곁의 사람들과의 관계, 얼마나 충만해요?" },
+            { label: "일상·공간", q: "사는 공간과 하루 리듬, 얼마나 마음에 들어요?" },
+            { label: "배움·성장", q: "요즘 배우며 자라고 있다는 느낌, 얼마나 들어요?" },
+            { label: "놀이·쉼", q: "재미·여가·쉼, 요즘 얼마나 챙기고 있어요?" }
+          ] },
+        { type: "choices", id: "w4_fill", multi: false, title: "지금 가장 '채우고 싶은' 영역은?",
+          options: ["돈·경제","건강·몸","일·커리어","마음·정서","관계","일상·공간","배움·성장","놀이·쉼"] },
+        { type: "choices", id: "w4_tight", multi: false, optional: true, title: "지금 가장 빠듯하게 느껴지는 영역은?",
+          options: ["돈·경제","건강·몸","일·커리어","마음·정서","관계","일상·공간","배움·성장","놀이·쉼"] },
+        { type: "choices", id: "w4_balance", multi: false, title: "레이더를 보니, 지금 내 균형은?",
+          options: ["한쪽으로 많이 쏠려 있다","대체로 고르다","전반적으로 낮다","몇 곳만 높다"] },
         { type: "promptForge", id: "w4_ai", title: "AI와 함께 곱씹기 · 프롬프트 만들기",
           intro: "2부 '나의 현재 지도'를 바탕으로 AI에게 물어볼 프롬프트예요. 복사해서 돌려보고, 다음 장에서 곱씹어요.",
-          system: "너는 따뜻하지만 솔직한 자기탐구 코치야. 아래는 내 삶의 영역별 현재 상태야. (1) 전체 균형이 어떻게 보이는지, (2) 지금 한 곳에 힘을 준다면 어디가 좋을지 이유와 함께, (3) 내가 더 생각해볼 질문 3가지를 짚어줘. 단정짓지 말아줘.",
+          system: "너는 따뜻하지만 솔직한 자기탐구 코치야. 아래 [내 기록]은 내 삶을 여덟 영역으로 나눠 0~10으로 매긴 현재 상태와, 내가 고른 '채우고 싶은 영역'이야. 점수가 낮은 게 나쁜 게 아니라 지금 위치일 뿐이라는 태도로 비춰줘. (1) 전체 균형이 어떻게 보이는지(쏠림·빈 곳), (2) 점수와 '채우고 싶은 영역'을 함께 보면 지금 어디에 힘을 주면 좋을지 이유와 함께, (3) 높은 영역의 힘을 낮은 영역으로 흘려보낼 방법이 있을지, (4) 내가 더 생각해볼 질문 3가지. 단정 짓지 말고 가설로, 구체적으로.",
           collect: [
-            { label: "영역별 점수", from: "w4_areas" },
-            { label: "각 영역 한 줄", from: "w4_area_note" },
-            { label: "채우고 싶은 영역 만다라트", from: "w4_mandala" }
+            { label: "여덟 영역 현재 점수(0~10)", from: "w4_areas" },
+            { label: "가장 채우고 싶은 영역", from: "w4_fill" },
+            { label: "가장 빠듯한 영역", from: "w4_tight" },
+            { label: "레이더로 본 균형", from: "w4_balance" },
+            { label: "나를 살아있게 하는 핵심 욕구 (W2)", from: "w2_core_need" },
+            { label: "나를 관통하는 가치 (W1)", from: "w1_journey" }
           ] },
         { type: "reframe", id: "w4_reframe", title: "AI와 함께 곱씹기 · 내 걸로 만들기",
           hint: "AI가 비춰준 것 중 내게 진짜인 것만 남겨요." },
@@ -261,27 +280,74 @@ const COURSE = {
         ],
         activity: [
           "각자 레이더 그림을 공유해요.",
-          "함께 만다라트 만들기 — 한 명씩 가운데 목표를 정하면, 나머지가 둘레 8칸 아이디어를 보태줘요.",
-          "한 달 돌아보기 — 각자 '나의 미래 그리기' 4주치를 다시 읽고, 달라진 점 한 가지씩."
+          "한 사람씩, 가장 빈 영역에 '높은 영역의 힘'을 어떻게 빌려줄 수 있을지 아이디어를 보태줘요."
         ]
       }
     },
     {
-      id: "w5", no: 5, badge: "5주차",
+      id: "w4b", no: 5, badge: "5주차",
+      title: "영역 깊이 파기 · 만다라트",
+      chapter: "2부 · 나의 현재 지도",
+      steps: [
+        { type: "intro", title: "고른 영역을 깊이",
+          body: "지난주 레이더에서 '가장 채우고 싶은 영역' 하나를 골랐죠. 이번 주는 그 한 영역만 깊이 파요. 대부분 고르기예요. 작게, 지금 할 수 있는 것까지 내려가 봐요." },
+        { type: "progress", id: "prog_w4b", title: "사소한 일, 이번 주는 어땠어요?" },
+        { type: "choices", id: "w4b_block", multi: true, allowOther: true, title: "그 영역에서 지금 가장 걸리는 건?",
+          options: ["시간이 없다","돈·여유가 없다","뭘 해야 할지 모르겠다","마음이 안 선다","주변 상황·사람","체력·에너지 부족","자꾸 미루게 된다","두렵다·자신이 없다"] },
+        { type: "choices", id: "w4b_why", multi: true, allowOther: true, title: "이 영역이 나에게 중요한 이유는?",
+          options: ["안정감","성장·발전","사람·관계","자유","자부심·인정","재미·즐거움","건강·지속","의미·기여"] },
+        { type: "choices", id: "w4b_step", multi: false, allowOther: true, title: "원하는 모습에 가까워지는 '지금 할 수 있는 한 걸음'은?",
+          options: ["정보부터 찾아본다","아주 작게 5분만 시작","사람에게 도움 청하기","날짜·시간을 정한다","방해물 하나 치우기","돈·도구를 준비","이미 하는 루틴에 끼워넣기"] },
+        { type: "text", id: "w4b_goal", multiline: true, optional: true, title: "1년 뒤, 이 영역에서 바라는 모습 한 줄",
+          hint: "딱 한 줄이면 충분해요. 떠오르는 대로." },
+        { type: "mandala", id: "w4_mandala", title: "채우고 싶은 영역 만다라트",
+          centerLabel: "지금 가장 채우고 싶은 영역",
+          hint: "가운데에 그 영역(또는 목표)을 적고, 둘레 8칸에 떠오르는 작은 행동·아이디어를 채워요. 다 안 채워도 괜찮아요." },
+        { type: "promptForge", id: "w4b_ai", title: "AI와 함께 곱씹기 · 프롬프트 만들기",
+          intro: "고른 한 영역을 어떻게 채워갈지 AI와 같이 그려봐요. 복사해서 돌려보고 다음 장에서 곱씹어요.",
+          system: "너는 현실적이고 따뜻한 실행 코치야. 아래 [내 기록]은 내가 채우고 싶은 삶의 한 영역과, 그 영역에서 걸리는 점·중요한 이유·지금 할 수 있는 한 걸음·1년 뒤 바라는 모습이야. (1) 내가 고른 '한 걸음'을 더 구체적이고 작게 만들어 이번 주에 바로 할 수 있게, (2) 걸리는 점을 넘는 현실적인 우회로, (3) 만다라트 8칸을 채울 만한 작은 아이디어 몇 개, (4) 1년 뒤 모습으로 가는 분기점 하나. 거창한 계획 말고 작게, 구체적으로.",
+          collect: [
+            { label: "채우고 싶은 영역", from: "w4_fill" },
+            { label: "그 영역에서 걸리는 점", from: "w4b_block" },
+            { label: "이 영역이 중요한 이유", from: "w4b_why" },
+            { label: "지금 할 수 있는 한 걸음", from: "w4b_step" },
+            { label: "1년 뒤 바라는 모습", from: "w4b_goal" },
+            { label: "채우고 싶은 영역 만다라트", from: "w4_mandala" }
+          ] },
+        { type: "reframe", id: "w4b_reframe", title: "AI와 함께 곱씹기 · 내 걸로 만들기",
+          hint: "AI가 준 것 중 진짜 할 것만 남겨요." },
+        { type: "manifest", id: "manifest_w4b", title: "이번 주의 미래 그리기 · 확언",
+          prompt: "그 영역이 채워진 나를 한 문장으로. \"나는 ___다\" 또는 \"나는 ___한다.\"", rows: 2, placeholder: "나는 ..." }
+      ],
+      meetup: {
+        discuss: [
+          "고른 영역에서 '지금 할 수 있는 한 걸음', 무엇으로 정했나요?",
+          "그 영역이 중요한 이유 — 말로 꺼내보니 어떤가요?"
+        ],
+        activity: [
+          "함께 만다라트 채우기 — 한 명이 가운데 영역을 말하면 나머지가 둘레 8칸 아이디어를 보태줘요.",
+          "다음 모임까지 '한 걸음' 해보기로 하고, 서로 안부 묻기로 해요."
+        ]
+      }
+    },
+    {
+      id: "w5", no: 6, badge: "6주차",
       title: "마음 · 라이프스타일",
       chapter: "3부 · 내가 원하는 것",
       steps: [
         { type: "intro", title: "이제 '원하는 것'으로",
           body: "지난 한 달은 '지금의 나'를 봤어요. 작동방식·강점·현재 지도를 한 번 훑어보고 와요. 이번 달부터는 방향을 틀어 '내가 원하는 것'으로 가요. 아직 막연해도 괜찮아요. 작고 사소한 끌림부터 적어봐요." },
-        { type: "text", id: "w5_review1m", multiline: true, title: "지난 한 달, 나에 대해 새로 알게 된 것",
-          hint: "1달차(작동방식·강점·현재 지도)를 훑어보고 떠오르는 한두 가지. 이게 2달차의 출발점이에요." },
+        { type: "text", id: "w5_review1m", multiline: true, optional: true, title: "지난 한 달, 나에 대해 새로 알게 된 것",
+          hint: "지난 몇 주(작동방식·강점·현재 지도)를 훑어보고 떠오르는 한두 가지. 이게 '원하는 것'으로 가는 출발점이에요." },
         { type: "progress", id: "prog_w5", title: "사소한 일, 이번 주는 어땠어요?" },
-        { type: "text", id: "w5_joy", multiline: true, title: "요즘 나를 기분 좋게 하는 것들", hint: "거창하지 않아도 돼요. 아침 커피, 짧은 산책, 좋아하는 노래처럼 작은 것들." },
+        { type: "choices", id: "w5_joy", multi: true, allowOther: true, title: "요즘 나를 기분 좋게 하는 것들",
+          options: ["아침 커피·차","짧은 산책","좋아하는 음악","맛있는 음식","푹 자기","운동·몸 움직이기","사람 만나기","혼자만의 시간","자연·바깥","반려동물","책·영화","따뜻한 물 샤워"] },
         { type: "text", id: "w5_dreamday", multiline: true, title: "내가 꿈꾸는 이상적인 하루", hint: "눈뜰 때부터 잠들 때까지, 가장 마음에 드는 하루를 그려봐요." },
         { type: "choices", id: "w5_pace", multi: true, allowOther: true, title: "내가 원하는 삶의 속도 · 리듬",
           options: ["느긋하게","규칙적으로","즉흥적으로","몰입과 휴식 반복","천천히 깊게","여러 가지 동시에","단순하게","여유 있게"] },
-        { type: "text", id: "w5_habit", multiline: true, title: "새로 만들고 싶은 습관 하나",
-          hint: "무엇을 만들고 싶은지 — 예: 다섯 줄 일기, 물 한 잔, 짧은 산책." },
+        { type: "choices", id: "w5_habit", multi: false, allowOther: true, title: "새로 만들고 싶은 습관 하나",
+          hint: "끌리는 걸 고르거나 직접 써요.",
+          options: ["다섯 줄 일기","물 한 잔","짧은 산책","스트레칭","독서 10분","일찍 자기","감사 한 줄","폰 멀리두기","정리 한 곳","명상·호흡"] },
         { type: "choices", id: "w5_habit_when", multi: false, allowOther: true, title: "그 습관, 언제·어디에 붙일까?",
           hint: "이미 하는 일 바로 뒤에 붙이면 한결 쉬워져요.",
           options: ["아침에 일어나서","출근·등교길","점심 먹고","집에 오면","저녁 먹고","자기 전","커피 마실 때","씻고 나서"] },
@@ -300,14 +366,15 @@ const COURSE = {
       }
     },
     {
-      id: "w6", no: 6, badge: "6주차",
+      id: "w6", no: 7, badge: "7주차",
       title: "관계 · 도전",
       chapter: "3부 · 내가 원하는 것",
       steps: [
         { type: "intro", title: "나를 둘러싼 사람들, 그리고 미뤄둔 도전",
           body: "원하는 삶에는 '누구와, 어떻게'가 빠질 수 없어요. 마음 한켠에 미뤄둔 도전도요. 눈치 보지 말고 솔직하게 적어봐요." },
         { type: "progress", id: "prog_w6", title: "사소한 일, 이번 주는 어땠어요?" },
-        { type: "text", id: "w6_good_rel", multiline: true, title: "나에게 '좋은 관계'란 어떤 걸까요?", hint: "함께 있으면 편한 사람들의 공통점, 내가 바라는 관계의 모습." },
+        { type: "choices", id: "w6_good_rel", multi: true, allowOther: true, title: "나에게 '좋은 관계'란?",
+          options: ["편하게 솔직할 수 있는","믿고 기댈 수 있는","적당한 거리가 있는","함께 성장하는","말 안 해도 통하는","같이 있으면 즐거운","나를 지지해주는","서로 자유로운"] },
         { type: "choices", id: "w6_want", multi: true, allowOther: true, title: "지금 내 관계에서 더 원하는 것",
           options: ["더 깊게","더 넓게","적당한 거리","새로운 인연","지금을 지키기","솔직함","함께하는 시간","혼자만의 시간"] },
         { type: "choices", id: "w6_attach_close", multi: false, title: "누군가와 가까워질 때 나는?",
@@ -317,7 +384,7 @@ const COURSE = {
         { type: "choices", id: "w6_boundary", multi: false, title: "도움이 필요할 때 나는?",
           options: ["편하게 부탁한다","웬만하면 혼자 해결한다","미안해서 망설인다","거절을 못해 떠안는다"] },
         { type: "text", id: "w6_near_far", multiline: true, title: "곁에 더 두고 싶은 사람 / 거리를 두고 싶은 관계", hint: "이름이 아니어도, 어떤 결의 관계인지." },
-        { type: "text", id: "w6_challenge", multiline: true, title: "죽기 전에 꼭 해보고 싶은 것", hint: "크든 작든. 떠오르는 대로 여러 개 적어도 좋아요." },
+        { type: "text", id: "w6_challenge", multiline: true, optional: true, title: "죽기 전에 꼭 해보고 싶은 것", hint: "크든 작든. 떠오르는 대로 여러 개 적어도 좋아요." },
         { type: "text", id: "w6_fear", multiline: true, title: "깨고 싶은 나의 두려움 · 한계", hint: "'이것만 아니면 해볼 텐데' 싶은 것." },
         { type: "promptForge", id: "w6_ai", title: "AI와 함께 곱씹기 · 관계 프롬프트 만들기",
           intro: "여기까지 고른 '나의 관계 방식'을 모아, AI에게 물어볼 프롬프트를 만들었어요. 복사해서 ChatGPT나 Claude에 붙여넣고, 돌아온 답을 다음 장에서 곱씹어요. (관계의 방식엔 정답이 없어요 — AI는 내가 준 것만 비춰줄 뿐이에요.)",
@@ -352,16 +419,18 @@ const COURSE = {
       }
     },
     {
-      id: "w7", no: 7, badge: "7주차",
+      id: "w7", no: 8, badge: "8주차",
       title: "일 · 성장 · 네 가지가 만나는 곳",
       chapter: "3부 · 내가 원하는 것",
       steps: [
         { type: "intro", title: "좋아하고, 잘하고, 필요하고, 보상받는",
           body: "하고 싶은 일을 찾을 때 도움이 되는 네 가지가 있어요. 좋아하는 것 · 잘하는 것 · 세상이 필요로 하는 것 · 보상받을 수 있는 것. 이 네 가지가 겹치는 곳을 천천히 더듬어봐요." },
         { type: "progress", id: "prog_w7", title: "사소한 일, 이번 주는 어땠어요?" },
-        { type: "text", id: "w7_next_work", multiline: true, title: "앞으로의 일에서 내가 원하는 것", hint: "직업·직장 말고도, 일을 통해 얻고 싶은 것(자유·성장·인정·의미 등)." },
-        { type: "text", id: "w7_strength_use", multiline: true, title: "내 장점을 지금보다 더 살린다면?", hint: "3주차에서 본 강점을 떠올리며 — 어디에, 어떻게 더 쓸 수 있을까요?" },
-        { type: "text", id: "w7_places", multiline: true, title: "가보고 싶은 곳 · 해보고 싶은 경험", hint: "여행지든, 분야든, 배워보고 싶은 것이든." },
+        { type: "choices", id: "w7_next_work", multi: true, allowOther: true, title: "앞으로의 일에서 내가 원하는 것",
+          hint: "직업·직장 말고도, 일을 통해 얻고 싶은 것.",
+          options: ["자유·자율","성장·배움","인정·평가","의미·기여","안정","돈·보상","좋은 사람들","도전·재미","워라밸","전문성"] },
+        { type: "text", id: "w7_strength_use", multiline: true, optional: true, title: "내 장점을 지금보다 더 살린다면?", hint: "3주차에서 본 강점을 떠올리며 — 어디에, 어떻게 더 쓸 수 있을까요?" },
+        { type: "text", id: "w7_places", multiline: true, optional: true, title: "가보고 싶은 곳 · 해보고 싶은 경험", hint: "여행지든, 분야든, 배워보고 싶은 것이든." },
         { type: "ikigai", id: "w7_ikigai", title: "네 가지가 만나는 곳",
           hint: "각 칸을 떠오르는 대로 채워요. 다 못 채워도 괜찮아요. 마지막에, 네 가지가 겹치는 한가운데에 무엇이 떠오르는지 적어봐요." },
         { type: "manifest", id: "manifest_w7", title: "이번 주의 미래 그리기 · 자랑",
@@ -379,14 +448,14 @@ const COURSE = {
       }
     },
     {
-      id: "w8", no: 8, badge: "8주차",
+      id: "w8", no: 9, badge: "9주차",
       title: "궁극의 질문 · 우선순위",
       chapter: "3부 · 내가 원하는 것",
       steps: [
         { type: "intro", title: "멀리 보고, 다시 지금으로",
           body: "이번 주는 조금 멀리 봐요. 몇 년 뒤의 나, 그리고 삶 전체를. 그런 다음 '그래서 지금 무엇이 가장 중요한지'로 돌아와요. 양이 조금 많은 주예요 — 다 못 채워도 괜찮고, '원하면'이라 적힌 칸은 시간 될 때 와도 돼요." },
         { type: "progress", id: "prog_w8", title: "사소한 일, 이번 주는 어땠어요?" },
-        { type: "text", id: "w8_futures", multiline: true, title: "3년 후 · 7년 후 · 10년 후의 나", hint: "각각 한두 줄씩. 어디서, 어떤 모습으로 살고 있을까요?" },
+        { type: "text", id: "w8_futures", multiline: true, optional: true, title: "3년 후 · 7년 후 · 10년 후의 나", hint: "각각 한두 줄씩. 어디서, 어떤 모습으로 살고 있을까요?" },
         { type: "text", id: "w8_epitaph", optional: true, multiline: true, title: "사람들이 나를 어떻게 기억하면 좋을까요?", hint: "먼 훗날, 한 문장으로 남는다면." },
         { type: "text", id: "w8_lifegoal", multiline: true, title: "지금 떠오르는 '생의 목표' 하나", hint: "거창하지 않아도 돼요. 지금 마음에 가장 크게 걸리는 것." },
         { type: "priority", id: "w8_priority", title: "내 가치, 무엇이 먼저일까?",
@@ -422,12 +491,12 @@ const COURSE = {
         activity: [
           "각자 '생의 목표'를 한 문장으로 공유해요. 피드백 없이 듣기만.",
           "함께 목표 만다라트 채우기 — 한 명의 가운데 목표에 나머지가 둘레 행동을 보태줘요.",
-          "2달차를 돌아보며, '내가 원하는 것'이 한 달 전과 어떻게 달라졌는지 한마디씩."
+          "지난 몇 주를 돌아보며, '내가 원하는 것'이 처음과 어떻게 달라졌는지 한마디씩."
         ]
       }
     },
     {
-      id: "w9", no: 9, badge: "9주차",
+      id: "w9", no: 10, badge: "10주차",
       title: "비전 · 작은 실험 설계",
       chapter: "4부 · 나의 실험",
       steps: [
@@ -456,7 +525,7 @@ const COURSE = {
       }
     },
     {
-      id: "w10", no: 10, badge: "10주차",
+      id: "w10", no: 11, badge: "11주차",
       title: "실험 실행 주간",
       chapter: "4부 · 나의 실험",
       steps: [
@@ -486,16 +555,16 @@ const COURSE = {
       }
     },
     {
-      id: "w11", no: 11, badge: "11주차",
+      id: "w11", no: 12, badge: "12주차",
       title: "실험 회고 · 책 점검",
       chapter: "4부 · 나의 실험",
       steps: [
         { type: "intro", title: "해보고 알게 된 것",
           body: "실험의 목적은 성공이 아니라 '나에 대한 데이터'예요. 맞았든 틀렸든, 한 걸음 더 나를 알게 됐어요." },
         { type: "progress", id: "prog_w11", title: "사소한 일, 이번 주는 어땠어요?" },
-        { type: "text", id: "w11_result", multiline: true, title: "실험 결과 — 가설은 맞았나요?", hint: "무슨 일이 있었는지 그대로." },
+        { type: "text", id: "w11_result", multiline: true, optional: true, title: "실험 결과 — 가설은 맞았나요?", hint: "무슨 일이 있었는지 그대로." },
         { type: "text", id: "w11_learn", multiline: true, title: "배운 것 · 의외였던 것", hint: "나에 대해 새로 안 것." },
-        { type: "text", id: "w11_keep", multiline: true, title: "계속할 것 / 그만둘 것", hint: "이번 실험에서 건진 것, 내려놓을 것." },
+        { type: "text", id: "w11_keep", multiline: true, optional: true, title: "계속할 것 / 그만둘 것", hint: "이번 실험에서 건진 것, 내려놓을 것." },
         { type: "intro", title: "내 책 한 번 훑어보기",
           body: "지금까지 쓴 '내 책'을 위쪽 메뉴 '내 책'에서 펼쳐봐요. 비어 있어 아쉬운 칸이 있으면 한두 개만 채워와요. 다음 주에 책을 완성해요." },
         { type: "manifest", id: "manifest_w11", title: "이번 주의 미래 그리기 · 곁",
@@ -513,14 +582,14 @@ const COURSE = {
       }
     },
     {
-      id: "w12", no: 12, badge: "12주차",
+      id: "w12", no: 13, badge: "13주차",
       title: "완성 · 맺음",
       chapter: "맺음",
       steps: [
         { type: "intro", title: "마지막 장을 덮으며",
-          body: "12주를 걸어왔어요. 빈칸이 있어도 괜찮아요 — 채운 만큼이 지금의 나예요. 이제 책을 닫는 글을 써요." },
+          body: "13주를 걸어왔어요. 빈칸이 있어도 괜찮아요 — 채운 만큼이 지금의 나예요. 이제 책을 닫는 글을 써요." },
         { type: "progress", id: "prog_w12", title: "사소한 일, 마지막 체크 — 해냈나요?" },
-        { type: "text", id: "w12_recap", multiline: true, title: "3개월 돌아보기 — 가장 큰 변화 / 가장 좋았던 순간", hint: "크지 않아도 돼요. 작게 달라진 것도." },
+        { type: "text", id: "w12_recap", multiline: true, optional: true, title: "3개월 돌아보기 — 가장 큰 변화 / 가장 좋았던 순간", hint: "크지 않아도 돼요. 작게 달라진 것도." },
         { type: "text", id: "w12_next1y", multiline: true, title: "다음 1년의 나에게", hint: "1주차에 적은 '찾고 싶은 질문'을 떠올리며." },
         { type: "text", id: "w12_spell", title: "나만의 주문 — 흔들릴 때 꺼낼 한 문장", placeholder: "예: 나는 천천히, 그러나 나답게 간다.", hint: "이 책 전체를 한 문장으로." },
         { type: "manifest", id: "manifest_w12", title: "이번 주의 미래 그리기 · 편지 닫기",
@@ -528,7 +597,7 @@ const COURSE = {
       ],
       meetup: {
         discuss: [
-          "12주 전과 지금, 가장 달라진 한 가지는?",
+          "13주 전과 지금, 가장 달라진 한 가지는?",
           "'나만의 주문'을 서로 나눠요."
         ],
         activity: [

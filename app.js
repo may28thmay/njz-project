@@ -639,8 +639,11 @@
       bookBlock("절대 안 움직이는 상황", fmtChoices("w2_never")) +
       bookBlock("충전되는 것", fmtChoices("w2_recharge_plus")) +
       bookBlock("방전되는 것", fmtChoices("w2_recharge_minus")) +
-      bookBlock("일을 처리하는 나다운 방식", fmtChoices("w2_work_style")) +
-      bookBlock("잘 되는 환경", fmtChoices("w2_env_setup")) +
+      bookBlock("나를 살아있게 하는 것", fmtChoices("w2_core_need")) +
+      bookBlock("내가 '괜찮은 나'로 느낄 때", fmtChoices("w2_selfworth")) +
+      bookBlock("가장 피하고 싶은 것", fmtChoices("w2_core_fear")) +
+      bookBlock("미룰 때 진짜 이유", fmtChoices("w2_procrastinate")) +
+      bookBlock("잘 안 될 때 나에게 건네는 말", fmtChoices("w2_selftalk")) +
       bookBlock("AI와 곱씹어 다시 쓴 작동방식", (A.w2_reframe && A.w2_reframe.mine) || "") + "</div>" +
 
       '<div class="chapter ch3">' + chapHead("", "나의 강점 지도", STK.star) +
@@ -663,6 +666,9 @@
       bookBlock("원하는 삶의 속도 · 리듬", fmtChoices("w5_pace")) +
       bookBlock("만들고 싶은 습관", A.w5_habit) +
       bookBlock("나에게 좋은 관계란", A.w6_good_rel) +
+      bookBlock("가까워질 때의 나", fmtChoices("w6_attach_close")) +
+      bookBlock("갈등할 때의 나", fmtChoices("w6_conflict")) +
+      bookBlock("도움이 필요할 때의 나", fmtChoices("w6_boundary")) +
       bookBlock("죽기 전 해보고 싶은 것", A.w6_challenge) +
       bookBlock("깨고 싶은 두려움 · 한계", A.w6_fear) +
       bookBlock("일에서 원하는 것", A.w7_next_work) +

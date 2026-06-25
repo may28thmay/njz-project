@@ -740,7 +740,7 @@
     var author = (A.author && A.author.trim()) || "나";
     var vals5 = (A.w1_journey && A.w1_journey.v) ? A.w1_journey.v.filter(function (x) { return x; }).join(" · ") : "";
     var radarVals = A.w4_areas || {};
-    var areaItems = getWeek("w4").steps.filter(function (s) { return s.type === "assess"; })[0].areas.map(function (a) { return a.label; });
+    var areaItems = getWeek("w4b").steps.filter(function (s) { return s.type === "assess"; })[0].areas.map(function (a) { return a.label; });
     var html =
       '<section class="book">' +
       '<div class="noprint bookbar"><a class="btn ghost" href="#home">← 홈</a><button class="btn" onclick="window.print()">PDF로 저장 / 인쇄</button></div>' +
@@ -786,16 +786,19 @@
 
       '<div class="chapter ch4">' + chapHead("2부", "나의 현재 지도", STK.cloud) +
       '<div class="bq"><h4>지금 내 삶의 영역</h4><svg class="radar" viewBox="0 0 220 220">' + radarInner(areaItems, radarVals) + "</svg></div>" +
+      bookBlock("돈·경제 — 지금", fmtChoices("w4_money_now")) +
+      bookBlock("건강·몸 — 지금", fmtChoices("w4_body_now")) +
+      bookBlock("일·커리어 — 지금", fmtChoices("w4_work_now")) +
+      bookBlock("배움·성장 — 지금", fmtChoices("w4_grow_now")) +
+      bookBlock("마음·정서 — 지금", fmtChoices("w4b_mind_now")) +
+      bookBlock("관계 — 지금", fmtChoices("w4b_rel_now")) +
+      bookBlock("일상·공간 — 지금", fmtChoices("w4b_life_now")) +
+      bookBlock("놀이·쉼 — 지금", fmtChoices("w4b_play_now")) +
       bookBlock("가장 채우고 싶은 영역", fmtChoices("w4_fill")) +
-      bookBlock("가장 빠듯한 영역", fmtChoices("w4_tight")) +
       bookBlock("레이더로 본 균형", fmtChoices("w4_balance")) +
-      bookBlock("AI와 곱씹어 다시 쓴 현재 지도", (A.w4_reframe && A.w4_reframe.mine) || "") +
-      bookBlock("이 영역에서 걸리는 점", fmtChoices("w4b_block")) +
-      bookBlock("이 영역이 중요한 이유", fmtChoices("w4b_why")) +
-      bookBlock("지금 할 수 있는 한 걸음", fmtChoices("w4b_step")) +
-      bookBlock("1년 뒤 바라는 모습", A.w4b_goal) +
-      '<div class="bq"><h4>채우고 싶은 영역 만다라트</h4>' + bookMandala("w4_mandala") + "</div>" +
-      bookBlock("AI와 곱씹어 다시 쓴 영역 계획", (A.w4b_reframe && A.w4b_reframe.mine) || "") + "</div>" +
+      bookBlock("AI와 곱씹어 다시 쓴 토대(돈·건강·일·배움)", (A.w4_reframe && A.w4_reframe.mine) || "") +
+      bookBlock("AI와 곱씹어 다시 쓴 현재 지도 종합", (A.w4b_reframe && A.w4b_reframe.mine) || "") +
+      '<div class="bq"><h4>채우고 싶은 영역 만다라트</h4>' + bookMandala("w4_mandala") + "</div></div>" +
 
       '<div class="chapter ch5">' + chapHead("3부", "내가 원하는 것", STK.heart) +
       bookBlock("결국 내가 원하는 것", A.w8_essence) +

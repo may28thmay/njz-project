@@ -29,6 +29,12 @@
   }
   function nl2br(s) { return esc(s).replace(/\n/g, "<br>"); }
   function getWeek(id) { return COURSE.weeks.filter(function (w) { return w.id === id; })[0]; }
+  /* ---------- 공개 게이팅 / 관리자 ---------- */
+  var ADMIN_HASH = "admin-najung";   // 비밀 진입 주소: .../#admin-najung (한 번 들어오면 이 기기에 기억)
+  function isAdmin() { try { return localStorage.getItem("njz_admin") === "1"; } catch (e) { return false; } }
+  function publishedN() { var n = COURSE.publishedWeeks; return (typeof n === "number") ? n : COURSE.weeks.length; }
+  function weekVisible(w) { if (isAdmin()) return true; var i = COURSE.weeks.indexOf(w); return i >= 0 && i < publishedN(); }
+  window.exitAdmin = function () { try { localStorage.removeItem("njz_admin"); } catch (e) {} location.hash = "#home"; route(); };
   function stepsOf(week) {
     return week.steps.concat([{ type: "meetup", title: "이번 주, 만나서 함께", meetup: week.meetup }]);
   }
@@ -737,12 +743,21 @@
 
   /* ---------- 화면 ---------- */
   function renderHome() {
-    var cards = COURSE.weeks.map(function (w) {
+    var admin = isAdmin(), pubN = publishedN();
+    var cards = COURSE.weeks.map(function (w, i) {
+      var pub = i < pubN;
+      if (!pub && !admin) {
+        return '<div class="wcard locked"><div class="wbadge">' + esc(w.badge) + "</div><h3>준비 중</h3><p>곧 열려요</p></div>";
+      }
       var ins = inputSteps(w), done = ins.filter(hasAns).length;
       var meta = done ? done + "/" + ins.length + " 채움" : "시작 전";
-      return '<a class="wcard" href="#' + w.id + '/0"><div class="wbadge">' + esc(w.badge) + "</div>" +
+      var flag = admin ? '<span class="pubflag ' + (pub ? "on" : "off") + '">' + (pub ? "공개" : "비공개") + "</span>" : "";
+      return '<a class="wcard" href="#' + w.id + '/0"><div class="wbadge">' + esc(w.badge) + flag + "</div>" +
         "<h3>" + esc(w.title) + "</h3><p>" + esc(w.chapter) + '</p><span class="wmeta">' + meta + "</span></a>";
     }).join("");
+    var adminBar = admin
+      ? '<div class="adminbar">🔧 관리자 모드 — 모든 주차를 봅니다. <b>친구 공개: ' + pubN + '주차까지</b>. 더 공개하려면 <code>publishedWeeks</code> 값을 올려 배포하세요. <button class="btn ghost" onclick="exitAdmin()">관리자 나가기</button></div>'
+      : "";
     var locked = COURSE.locked.map(function (l) {
       return '<div class="wcard locked"><div class="wbadge">' + esc(l.badge) + "</div><h3>" + esc(l.title) + "</h3><p>" + esc(l.desc) + "</p></div>";
     }).join("");
@@ -750,6 +765,7 @@
     document.getElementById("app").innerHTML =
       '<section class="home">' +
       '<div class="hero"><h1>' + esc(COURSE.title) + "</h1><p>" + esc(COURSE.subtitle) + "</p></div>" +
+      adminBar +
       '<div class="promises"><ul>' + promises + "</ul></div>" +
       '<div class="wgrid">' + cards + locked + "</div>" +
       '<div class="rowbtn center"><a class="btn big" href="#book">내 책 미리보기 →</a></div>' +
@@ -767,6 +783,7 @@
   function renderStep() {
     var week = getWeek(CUR.weekId);
     if (!week) { location.hash = "#home"; return; }
+    if (!weekVisible(week)) { location.hash = "#home"; return; }
     var list = stepsOf(week);
     if (CUR.idx < 0 || CUR.idx >= list.length) { location.hash = "#home"; return; }
     var s = list[CUR.idx]; CUR.step = s; CUR.stepsList = list;
@@ -995,9 +1012,14 @@
   /* ---------- 라우팅 ---------- */
   function route() {
     var h = location.hash.replace(/^#/, "");
+    if (h === ADMIN_HASH) { try { localStorage.setItem("njz_admin", "1"); } catch (e) {} location.hash = "#home"; return; }
     if (h === "book") { renderBook(); return; }
     var m = h.match(/^(w\d+[a-z]*)\/(\d+)$/);
-    if (m) { CUR.weekId = m[1]; CUR.idx = +m[2]; renderStep(); return; }
+    if (m) {
+      var wk = getWeek(m[1]);
+      if (wk && !weekVisible(wk)) { location.hash = "#home"; return; }
+      CUR.weekId = m[1]; CUR.idx = +m[2]; renderStep(); return;
+    }
     renderHome();
   }
   window.addEventListener("hashchange", route);

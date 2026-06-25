@@ -105,6 +105,16 @@
     var lab = document.getElementById("slv_" + idx); if (lab) lab.textContent = v;
     var r = document.getElementById("radar"); if (r) r.innerHTML = radarInner(CUR.step.items, sl(id));
   };
+  window.setAssess = function (id, label, score, el) {
+    sl(id)[label] = +score; save();
+    if (el && el.parentNode) {
+      var chips = el.parentNode.querySelectorAll(".chip");
+      for (var i = 0; i < chips.length; i++) chips[i].classList.remove("on");
+      el.classList.add("on");
+    }
+    var items = (CUR.step.areas || []).map(function (a) { return a.label; });
+    var r = document.getElementById("radar"); if (r) r.innerHTML = radarInner(items, sl(id));
+  };
 
   window.setLog = function (id, i, key, v) { A[id][i][key] = v; save(); };
 
@@ -157,6 +167,7 @@
       case "cardFilter": return !!(v && ((v.l1 && v.l1.length) || (v.l2 && v.l2.length)));
       case "mandala": return !!(v && (v.center || (v.cells && v.cells.some(function (c) { return c; }))));
       case "sliders": return !!(v && Object.keys(v).length);
+      case "assess": return !!(v && Object.keys(v).length);
       case "dailyLog": return !!(v && v.some(function (d) { return Object.keys(d).some(function (k) { return d[k] && String(d[k]).trim(); }); }));
       case "reframe": return !!(v && (v.resonate || v.doubt || v.mine));
       case "digest": return !!(v && Object.keys(v).some(function (k) { return v[k] && String(v[k]).trim(); }));
@@ -261,6 +272,23 @@
     }).join("");
     var svg = '<svg class="radar" id="radar" viewBox="0 0 220 220">' + radarInner(s.items, vals) + "</svg>";
     return hint + '<div class="sliders">' + rows + "</div>" + svg;
+  }
+  function compAssess(s) {
+    var vals = sl(s.id);
+    var hint = s.hint ? '<p class="hint">' + esc(s.hint) + "</p>" : "";
+    var scale = s.scale || ["전혀", "조금", "보통", "꽤", "많이"];
+    var rows = s.areas.map(function (a) {
+      var cur = vals[a.label];
+      var chips = scale.map(function (lbl, idx) {
+        var score = (idx + 1) * 2;
+        var on = (cur === score) ? " on" : "";
+        return '<button class="chip' + on + '" onclick="setAssess(\'' + s.id + "','" + esc(a.label).replace(/'/g, "") + "'," + score + ',this)">' + esc(lbl) + "</button>";
+      }).join("");
+      return '<div class="assessrow"><p class="alabel"><b>' + esc(a.label) + "</b> · " + esc(a.q) + '</p><div class="chips">' + chips + "</div></div>";
+    }).join("");
+    var items = s.areas.map(function (a) { return a.label; });
+    var svg = '<svg class="radar" id="radar" viewBox="0 0 220 220">' + radarInner(items, vals) + "</svg>";
+    return hint + '<div class="assess">' + rows + "</div>" + svg;
   }
   function compLog(s) {
     if (!A[s.id]) { A[s.id] = []; for (var k = 0; k < 7; k++) { var o = {}; s.fields.forEach(function (f) { o[f.key] = ""; }); A[s.id].push(o); } save(); }
@@ -538,6 +566,7 @@
       case "cardFilter": body = compCard(s); break;
       case "mandala": body = compMandala(s); break;
       case "sliders": body = compSliders(s); break;
+      case "assess": body = compAssess(s); break;
       case "dailyLog": body = compLog(s); break;
       case "meetup": body = compMeetup(s.meetup); break;
       case "promptForge": body = compPromptForge(s); break;
@@ -616,7 +645,7 @@
     var author = (A.author && A.author.trim()) || "나";
     var vals5 = (A.w1_journey && A.w1_journey.v) ? A.w1_journey.v.filter(function (x) { return x; }).join(" · ") : "";
     var radarVals = A.w4_areas || {};
-    var areaItems = getWeek("w4").steps.filter(function (s) { return s.type === "sliders"; })[0].items;
+    var areaItems = getWeek("w4").steps.filter(function (s) { return s.type === "assess"; })[0].areas.map(function (a) { return a.label; });
     var html =
       '<section class="book">' +
       '<div class="noprint bookbar"><a class="btn ghost" href="#home">← 홈</a><button class="btn" onclick="window.print()">PDF로 저장 / 인쇄</button></div>' +
@@ -651,8 +680,8 @@
       bookBlock("강점이 드러난 순간", A.w3_evidence) +
       bookBlock("남들은 어려운데 나는 쉬운 일", A.w3_easy) +
       bookBlock("사람들이 고마워하는 것", A.w3_thank) +
-      bookBlock("주변이 본 나의 강점", A.w3_others) +
-      bookBlock("강점의 갭에서 느낀 것", A.w3_gap) +
+      bookBlock("주변이 본 나의 강점", fmtChoices("w3_others")) +
+      bookBlock("강점의 갭에서 느낀 것", fmtChoices("w3_gap")) +
       bookBlock("강점이 드러나는 양식", fmtChoices("w3_shine")) +
       bookBlock("강점의 다른 얼굴 (과사용)", fmtChoices("w3_shadow")) +
       bookBlock("강점을 더 키우는 실험", A.w3_strength_use) +
@@ -660,25 +689,32 @@
 
       '<div class="chapter ch4">' + chapHead("2부", "나의 현재 지도", STK.cloud) +
       '<div class="bq"><h4>지금 내 삶의 영역</h4><svg class="radar" viewBox="0 0 220 220">' + radarInner(areaItems, radarVals) + "</svg></div>" +
-      bookBlock("각 영역, 지금 한 줄", A.w4_area_note) +
+      bookBlock("가장 채우고 싶은 영역", fmtChoices("w4_fill")) +
+      bookBlock("가장 빠듯한 영역", fmtChoices("w4_tight")) +
+      bookBlock("레이더로 본 균형", fmtChoices("w4_balance")) +
+      bookBlock("AI와 곱씹어 다시 쓴 현재 지도", (A.w4_reframe && A.w4_reframe.mine) || "") +
+      bookBlock("이 영역에서 걸리는 점", fmtChoices("w4b_block")) +
+      bookBlock("이 영역이 중요한 이유", fmtChoices("w4b_why")) +
+      bookBlock("지금 할 수 있는 한 걸음", fmtChoices("w4b_step")) +
+      bookBlock("1년 뒤 바라는 모습", A.w4b_goal) +
       '<div class="bq"><h4>채우고 싶은 영역 만다라트</h4>' + bookMandala("w4_mandala") + "</div>" +
-      bookBlock("AI와 곱씹어 다시 쓴 2부", (A.w4_reframe && A.w4_reframe.mine) || "") + "</div>" +
+      bookBlock("AI와 곱씹어 다시 쓴 영역 계획", (A.w4b_reframe && A.w4b_reframe.mine) || "") + "</div>" +
 
       '<div class="chapter ch5">' + chapHead("3부", "내가 원하는 것", STK.heart) +
       bookBlock("결국 내가 원하는 것", A.w8_essence) +
       bookBlock("지난 한 달, 새로 알게 된 나", A.w5_review1m) +
-      bookBlock("기분 좋게 하는 것들", A.w5_joy) +
+      bookBlock("기분 좋게 하는 것들", fmtChoices("w5_joy")) +
       bookBlock("꿈꾸는 이상적인 하루", A.w5_dreamday) +
       bookBlock("원하는 삶의 속도 · 리듬", fmtChoices("w5_pace")) +
-      bookBlock("만들고 싶은 습관", A.w5_habit) +
-      bookBlock("나에게 좋은 관계란", A.w6_good_rel) +
+      bookBlock("만들고 싶은 습관", fmtChoices("w5_habit")) +
+      bookBlock("나에게 좋은 관계란", fmtChoices("w6_good_rel")) +
       bookBlock("가까워질 때의 나", fmtChoices("w6_attach_close")) +
       bookBlock("갈등할 때의 나", fmtChoices("w6_conflict")) +
       bookBlock("도움이 필요할 때의 나", fmtChoices("w6_boundary")) +
       bookBlock("죽기 전 해보고 싶은 것", A.w6_challenge) +
       bookBlock("깨고 싶은 두려움 · 한계", A.w6_fear) +
       bookBlock("AI와 곱씹어 다시 본 나의 관계", (A.w6_reframe && A.w6_reframe.mine) || "") +
-      bookBlock("일에서 원하는 것", A.w7_next_work) +
+      bookBlock("일에서 원하는 것", fmtChoices("w7_next_work")) +
       bookBlock("네 가지가 만나는 곳", fmtAny("w7_ikigai")) +
       bookBlock("3 · 7 · 10년 후의 나", A.w8_futures) +
       bookBlock("어떻게 기억되고 싶은지", A.w8_epitaph) +

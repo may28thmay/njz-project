@@ -86,6 +86,12 @@ main{max-width:720px; margin:0 auto; padding:28px 20px 80px}
 .slabel{font-size:14px; color:#5c564c}
 .slider input[type=range]{width:100%; accent-color:var(--accent)}
 .sval{font-size:14px; color:var(--accent-d); text-align:right; font-variant-numeric:tabular-nums}
+.assess{display:flex; flex-direction:column; gap:14px; margin-bottom:8px}
+.assessrow{padding-bottom:12px; border-bottom:1px solid var(--line)}
+.assessrow:last-child{border-bottom:none}
+.alabel{font-size:14px; color:#5c564c; margin:0 0 8px}
+.assess .chips{gap:8px}
+.assess .chip{padding:7px 12px; font-size:14px}
 .radar{display:block; width:280px; max-width:100%; margin:10px auto 0}
 .rgrid{fill:none; stroke:var(--line)}
 .raxis{stroke:var(--line)}

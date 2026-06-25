@@ -175,7 +175,7 @@
     switch (s.type) {
       case "text": return !!(v && v.trim());
       case "list": return !!(Array.isArray(v) && v.some(function (x) { return x && String(x).trim(); }));
-      case "promptForge": if (!s.reframeId) return false; var r = A[s.reframeId]; return !!(r && (r.resonate || r.doubt || r.mine || r.answer));
+      case "promptForge": if (!s.reframeId) return false; var r = A[s.reframeId]; return !!(r && Object.keys(r).some(function (k) { return r[k] && String(r[k]).trim(); }));
       case "choices": return !!(v && ((v.picked && v.picked.length) || (v.other && v.other.trim())));
       case "cardFilter": return !!(v && ((v.l1 && v.l1.length) || (v.l2 && v.l2.length)));
       case "mandala": return !!(v && (v.center || (v.cells && v.cells.some(function (c) { return c; }))));
@@ -443,7 +443,18 @@
       '<div class="rowbtn"><button class="btn" onclick="copyPrompt(this)">프롬프트 복사</button> ' +
       '<a class="btn ghost" href="https://claude.ai/new" target="_blank" rel="noopener">Claude 열기</a> ' +
       '<a class="btn ghost" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT 열기</a></div>';
-    if (s.reframeId) {
+    if (s.sections && s.sections.length) {
+      var rv = reframe(s.reframeId);
+      out += '<div class="forgeline"></div>' +
+        (s.reframeHint ? '<p class="hint">' + esc(s.reframeHint) + "</p>" : "") +
+        '<p class="hint">AI 답을 항목(①②③…)별로 나눠 붙이고, 각 항목 아래에 떠오른 생각을 적어요.</p>';
+      out += s.sections.map(function (sec, i) {
+        return '<div class="forgesec"><h4 class="secq">' + esc(sec) + "</h4>" +
+          '<label class="rfield"><span>AI 답에서 이 항목 부분 붙여넣기</span><textarea rows="3" oninput="setReframe(\'' + s.reframeId + '\',\'p' + i + '\',this.value)">' + esc(rv["p" + i] || "") + "</textarea></label>" +
+          '<label class="rfield"><span>여기에 대한 내 생각</span><textarea rows="2" oninput="setReframe(\'' + s.reframeId + '\',\'t' + i + '\',this.value)">' + esc(rv["t" + i] || "") + "</textarea></label></div>";
+      }).join("");
+      out += '<label class="rfield"><span>전체적으로 — 내 언어로 한 줄 (책에 실려요)</span><textarea rows="3" oninput="setReframe(\'' + s.reframeId + '\',\'mine\',this.value)">' + esc(rv.mine || "") + "</textarea></label>";
+    } else if (s.reframeId) {
       var rv = reframe(s.reframeId);
       out += '<div class="forgeline"></div>' +
         '<label class="rfield"><span>AI 답을 여기에 붙여넣기</span><textarea rows="6" placeholder="복사한 프롬프트를 AI에 넣고, 받은 답을 여기 붙여두면 아래에서 곱씹기 편해요." oninput="setReframe(\'' + s.reframeId + '\',\'answer\',this.value)">' + esc(rv.answer || "") + "</textarea></label>" +

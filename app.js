@@ -860,7 +860,7 @@
   function route() {
     var h = location.hash.replace(/^#/, "");
     if (h === "book") { renderBook(); return; }
-    var m = h.match(/^(w\d+)\/(\d+)$/);
+    var m = h.match(/^(w\d+[a-z]*)\/(\d+)$/);
     if (m) { CUR.weekId = m[1]; CUR.idx = +m[2]; renderStep(); return; }
     renderHome();
   }

@@ -329,6 +329,7 @@
       }).join("");
       return '<div class="assessrow"><p class="alabel"><b>' + esc(a.label) + "</b> · " + esc(a.q) + '</p><div class="chips">' + chips + "</div></div>";
     }).join("");
+    if (s.noRadar) return hint + '<div class="assess">' + rows + "</div>";
     var items = s.areas.map(function (a) { return a.label; });
     var svg = '<svg class="radar" id="radar" viewBox="0 0 220 220">' + radarInner(items, vals) + "</svg>";
     return hint + '<div class="assess">' + rows + "</div>" + svg;
@@ -422,6 +423,14 @@
     if (v.mine !== undefined) return v.mine || "";
     if (typeof v === "object") return Object.keys(v).map(function (k) { return k + " " + v[k]; }).join(", ");
     return "";
+  }
+  function topAssess(id, n) {
+    var v = A[id]; if (!v || typeof v !== "object") return "";
+    var arr = Object.keys(v).map(function (k) { return [k, v[k]]; })
+      .filter(function (x) { return x[1] != null; })
+      .sort(function (a, b) { return b[1] - a[1]; });
+    if (!arr.length) return "";
+    return arr.slice(0, n || 2).map(function (x) { return x[0]; }).join(", ");
   }
   function buildPrompt(s) {
     var lines = s.collect.map(function (c) { var val = fmtAny(c.from); return "- " + c.label + ": " + (val && val.trim() ? val : "(아직 안 씀)"); });
@@ -763,11 +772,13 @@
       bookBlock("절대 안 움직이는 상황", fmtChoices("w2_never")) +
       bookBlock("충전되는 것", fmtChoices("w2_recharge_plus")) +
       bookBlock("방전되는 것", fmtChoices("w2_recharge_minus")) +
-      bookBlock("나를 살아있게 하는 것", fmtChoices("w2_core_need")) +
-      bookBlock("내가 '괜찮은 나'로 느낄 때", fmtChoices("w2_selfworth")) +
+      bookBlock("나를 살아있게 하는 것", topAssess("w2_core_need", 2)) +
+      bookBlock("내가 '괜찮은 나'로 느낄 때", topAssess("w2_selfworth", 2)) +
+      bookBlock("나를 움직이는 힘", topAssess("w2_regfocus", 2)) +
       bookBlock("가장 피하고 싶은 것", fmtChoices("w2_core_fear")) +
       bookBlock("미룰 때 진짜 이유", fmtChoices("w2_procrastinate")) +
-      bookBlock("잘 안 될 때 나에게 건네는 말", fmtChoices("w2_selftalk")) +
+      bookBlock("힘든 감정을 다루는 법", topAssess("w2_emotion_reg", 2)) +
+      bookBlock("잘 안 될 때 나에게 건네는 말", topAssess("w2_selftalk", 2)) +
       bookBlock("AI와 곱씹어 다시 쓴 작동방식", (A.w2_reframe && A.w2_reframe.mine) || "") + "</div>" +
 
       '<div class="chapter ch3">' + chapHead("", "나의 강점 지도", STK.star) +

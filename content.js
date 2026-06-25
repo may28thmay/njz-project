@@ -262,7 +262,7 @@ const COURSE = {
           hint: "내가 남긴 5개와 친구가 골라준 5개를 자동으로 견줘봤어요." },
         { type: "choices", id: "w3_gap", multi: false, optional: true, title: "비교해보니 — 어떤가요?",
           options: ["거의 같다","내가 나를 더 후하게 본다","남이 나를 더 후하게 본다","몰랐던 강점을 발견했다"] },
-        { type: "shadow", id: "w3_shadow_pick", strengthsFrom: "w3_strengths", max: 6,
+        { type: "shadow", id: "w3_shadow_pick", strengthsFrom: "w3_strengths",
           title: "내 강점의 '그림자' — 나도 이런 적 있다 싶은 것",
           hint: "강점이 지나칠 때 나오는 모습이에요. 흠이 아니라 같은 강점의 다른 얼굴 — 해당된다 싶은 걸 골라요.",
           emptyHint: "먼저 위에서 대표 강점 5개를 골라주세요. 그래야 그 강점의 그림자를 보여드려요." },

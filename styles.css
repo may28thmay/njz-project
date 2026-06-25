@@ -92,6 +92,12 @@ main{max-width:720px; margin:0 auto; padding:28px 20px 80px}
 .alabel{font-size:14px; color:#5c564c; margin:0 0 8px}
 .assess .chips{gap:8px}
 .assess .chip{padding:7px 12px; font-size:14px}
+.hint.done b, .hint.cnt.done b{color:var(--accent-d)}
+.compare{display:flex; flex-direction:column; gap:16px}
+.cmpgroup h4{margin:0 0 2px; font-size:15px}
+.cmpgroup h4 span{color:var(--accent-d); font-variant-numeric:tabular-nums}
+.chips.ro{display:flex; flex-wrap:wrap; gap:8px}
+.chips.ro .chip{cursor:default}
 .radar{display:block; width:280px; max-width:100%; margin:10px auto 0}
 .rgrid{fill:none; stroke:var(--line)}
 .raxis{stroke:var(--line)}

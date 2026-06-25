@@ -46,9 +46,12 @@
     }
     return c;
   }
-  window.toggleChoice = function (id, label, el, multi) {
+  window.toggleChoice = function (id, label, el, multi, max) {
     var c = choice(id), i = c.picked.indexOf(label);
-    if (multi) { if (i >= 0) c.picked.splice(i, 1); else c.picked.push(label); }
+    if (multi) {
+      if (i >= 0) c.picked.splice(i, 1);
+      else { if (max && c.picked.length >= max) return; c.picked.push(label); }
+    }
     else {
       c.picked = (i >= 0) ? [] : [label];
       if (el && el.parentNode) {
@@ -58,11 +61,13 @@
     }
     if (el) el.classList.toggle("on", c.picked.indexOf(label) >= 0);
     save();
+    if (max) { var cn = document.getElementById(id + "_cnt"); if (cn) { cn.textContent = c.picked.length + " / " + max; cn.classList.toggle("done", c.picked.length === max); } }
   };
-  window.addOther = function (id, el, multi) {
+  window.addOther = function (id, el, multi, max) {
     var v = (el.value || "").trim();
     if (!v) return;
     var c = choice(id);
+    if (max && c.picked.indexOf(v) < 0 && c.picked.length >= max) { el.value = ""; return; }
     var box = el.parentNode.querySelector(".chips");
     if (box) {
       var btns = box.querySelectorAll(".chip");
@@ -78,7 +83,7 @@
       var b = document.createElement("button");
       b.className = "chip on";
       b.textContent = v;
-      b.onclick = function () { window.toggleChoice(id, v, b, !!multi); };
+      b.onclick = function () { window.toggleChoice(id, v, b, !!multi, max); };
       box.appendChild(b);
     }
     el.value = ""; el.focus();
@@ -87,11 +92,14 @@
   function card(id) { if (!A[id]) A[id] = { stage: 1, l1: [], l2: [] }; return A[id]; }
   window.cardToggle = function (id, word, el) {
     var c = card(id), list = c.stage === 1 ? c.l1 : c.l2, i = list.indexOf(word);
-    if (i >= 0) list.splice(i, 1); else list.push(word);
+    var cap = CUR.step && (c.stage === 1 ? CUR.step.pick1 : CUR.step.pick2);
+    if (i >= 0) list.splice(i, 1);
+    else { if (cap && list.length >= cap) return; list.push(word); }
     el.classList.toggle("on", list.indexOf(word) >= 0);
     save();
     var cc = document.getElementById("cardCount");
-    if (cc) cc.textContent = list.length;
+    if (cc) { cc.textContent = cap ? (list.length + " / " + cap) : (list.length + "개 선택"); cc.parentNode.classList.toggle("done", !!cap && list.length === cap); }
+    if (c.stage === 1) { var nb = document.getElementById("cardNext"); if (nb && cap) nb.disabled = (list.length !== cap); }
   };
   window.cardStage = function (id, stage) { card(id).stage = stage; save(); renderStep(); };
 
@@ -220,16 +228,18 @@
     var c = choice(s.id);
     var picked = c.picked || [];
     var hint = s.hint ? '<p class="hint">' + esc(s.hint) + "</p>" : "";
+    var mx = s.max || 0;
     var chip = function (o, on) {
-      return '<button class="chip' + (on ? " on" : "") + '" onclick="toggleChoice(\'' + s.id + "','" + esc(o).replace(/'/g, "") + "',this," + (s.multi ? "true" : "false") + ')">' + esc(o) + "</button>";
+      return '<button class="chip' + (on ? " on" : "") + '" onclick="toggleChoice(\'' + s.id + "','" + esc(o).replace(/'/g, "") + "',this," + (s.multi ? "true" : "false") + "," + mx + ')">' + esc(o) + "</button>";
     };
     var chips = s.options.map(function (o) { return chip(o, picked.indexOf(o) >= 0); }).join("");
     var customChips = picked.filter(function (p) { return s.options.indexOf(p) < 0; })
       .map(function (p) { return chip(p, true); }).join("");
+    var counter = mx ? '<p class="hint cnt' + (picked.length === mx ? " done" : "") + '"><b><span id="' + s.id + '_cnt">' + picked.length + " / " + mx + "</span></b> 선택</p>" : "";
     var other = s.allowOther
-      ? '<input type="text" class="other" placeholder="직접 쓰기 후 Enter ↵" onkeydown="if(event.key===\'Enter\'){event.preventDefault();addOther(\'' + s.id + '\',this,' + (s.multi ? "true" : "false") + ');}">'
+      ? '<input type="text" class="other" placeholder="직접 쓰기 후 Enter ↵" onkeydown="if(event.key===\'Enter\'){event.preventDefault();addOther(\'' + s.id + '\',this,' + (s.multi ? "true" : "false") + "," + mx + ');}">'
       : "";
-    return hint + '<div class="chips">' + chips + customChips + "</div>" + other;
+    return hint + counter + '<div class="chips">' + chips + customChips + "</div>" + other;
   }
   function compCard(s) {
     var c = card(s.id);
@@ -243,9 +253,13 @@
       var on = sel.indexOf(w) >= 0 ? " on" : "";
       return '<button class="chip' + on + '" onclick="cardToggle(\'' + s.id + "','" + w + "',this)\">" + esc(w) + "</button>";
     }).join("");
-    var counter = '<p class="hint">' + esc(hintTxt) + ' · <b><span id="cardCount">' + sel.length + "</span></b>개 선택</p>";
+    var cap = c.stage === 1 ? s.pick1 : s.pick2;
+    var cntTxt = cap ? (sel.length + " / " + cap) : (sel.length + "개 선택");
+    // 카운터 표기는 cardToggle과 동일 포맷 유지
+    var counter = '<p class="hint' + (cap && sel.length === cap ? " done" : "") + '">' + esc(hintTxt) + ' · <b><span id="cardCount">' + esc(cntTxt) + "</span></b></p>";
+    var gate = c.stage === 1 && s.pick1 && sel.length !== s.pick1 ? " disabled" : "";
     var nav = c.stage === 1
-      ? '<div class="rowbtn"><button class="btn" onclick="cardStage(\'' + s.id + '\',2)">다음 단계 →</button></div>'
+      ? '<div class="rowbtn"><button class="btn" id="cardNext"' + gate + ' onclick="cardStage(\'' + s.id + '\',2)">다음 단계 →</button></div>'
       : '<div class="rowbtn"><button class="btn ghost" onclick="cardStage(\'' + s.id + '\',1)">← 다시 고르기</button></div>';
     return counter + '<div class="chips cards">' + chips + "</div>" + nav;
   }
@@ -289,6 +303,41 @@
     var items = s.areas.map(function (a) { return a.label; });
     var svg = '<svg class="radar" id="radar" viewBox="0 0 220 220">' + radarInner(items, vals) + "</svg>";
     return hint + '<div class="assess">' + rows + "</div>" + svg;
+  }
+  function selOf(id) {
+    var v = A[id]; if (!v) return [];
+    if (v.l2 !== undefined || v.l1 !== undefined) return (v.l2 && v.l2.length) ? v.l2 : (v.l1 || []);
+    if (v.picked !== undefined) return v.picked || [];
+    return [];
+  }
+  function cmpLine(mineId, otherId) {
+    var m = selOf(mineId), o = selOf(otherId);
+    if (!m.length || !o.length) return "";
+    var both = m.filter(function (w) { return o.indexOf(w) >= 0; });
+    var om = m.filter(function (w) { return o.indexOf(w) < 0; });
+    var oo = o.filter(function (w) { return m.indexOf(w) < 0; });
+    return "겹침 — " + (both.join(", ") || "—") + " · 나만 — " + (om.join(", ") || "—") + " · 친구만 — " + (oo.join(", ") || "—");
+  }
+  function compCompare(s) {
+    var mine = selOf(s.mineFrom), other = selOf(s.otherFrom);
+    var hint = s.hint ? '<p class="hint">' + esc(s.hint) + "</p>" : "";
+    if (!mine.length || !other.length) {
+      return hint + '<p class="hint">위 단계에서 ' + esc(s.mineLabel || "내") + ' · ' + esc(s.otherLabel || "상대") + " 강점을 먼저 골라주세요.</p>";
+    }
+    var both = mine.filter(function (w) { return other.indexOf(w) >= 0; });
+    var onlyMine = mine.filter(function (w) { return other.indexOf(w) < 0; });
+    var onlyOther = other.filter(function (w) { return mine.indexOf(w) < 0; });
+    var chips = function (arr) {
+      return arr.length ? '<div class="chips ro">' + arr.map(function (w) { return '<span class="chip on">' + esc(w) + "</span>"; }).join("") + "</div>" : '<p class="hint">없음</p>';
+    };
+    var group = function (title, sub, arr) {
+      return '<div class="cmpgroup"><h4>' + esc(title) + ' <span>' + arr.length + "</span></h4>" + '<p class="hint">' + esc(sub) + "</p>" + chips(arr) + "</div>";
+    };
+    return hint + '<div class="compare">' +
+      group("✓ 겹친 강점", "나도 골랐고, " + (s.otherLabel || "친구") + "도 본 — 확인된 강점", both) +
+      group("● 나만 고른 강점", "내가 아는 나의 강점(아직 남에겐 덜 보이는)", onlyMine) +
+      group("○ " + (s.otherLabel || "친구") + "만 본 강점", "내가 몰랐던, 남이 본 강점(blind spot)", onlyOther) +
+      "</div>";
   }
   function compLog(s) {
     if (!A[s.id]) { A[s.id] = []; for (var k = 0; k < 7; k++) { var o = {}; s.fields.forEach(function (f) { o[f.key] = ""; }); A[s.id].push(o); } save(); }
@@ -567,6 +616,7 @@
       case "mandala": body = compMandala(s); break;
       case "sliders": body = compSliders(s); break;
       case "assess": body = compAssess(s); break;
+      case "compare": body = compCompare(s); break;
       case "dailyLog": body = compLog(s); break;
       case "meetup": body = compMeetup(s.meetup); break;
       case "promptForge": body = compPromptForge(s); break;
@@ -680,8 +730,10 @@
       bookBlock("강점이 드러난 순간", A.w3_evidence) +
       bookBlock("남들은 어려운데 나는 쉬운 일", A.w3_easy) +
       bookBlock("사람들이 고마워하는 것", A.w3_thank) +
-      bookBlock("주변이 본 나의 강점", fmtChoices("w3_others")) +
-      bookBlock("강점의 갭에서 느낀 것", fmtChoices("w3_gap")) +
+      bookBlock("친구가 본 나의 강점", fmtChoices("w3_others")) +
+      bookBlock("강점 비교 (겹침 / 나만 / 친구만)", cmpLine("w3_strengths", "w3_others")) +
+      bookBlock("비교해보니", fmtChoices("w3_gap")) +
+      bookBlock("보완하고 싶은 약점", fmtChoices("w3_weak")) +
       bookBlock("강점이 드러나는 양식", fmtChoices("w3_shine")) +
       bookBlock("강점의 다른 얼굴 (과사용)", fmtChoices("w3_shadow")) +
       bookBlock("강점을 더 키우는 실험", A.w3_strength_use) +

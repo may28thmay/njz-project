@@ -45,6 +45,13 @@ main{max-width:720px; margin:0 auto; padding:28px 20px 80px}
 .wbadge{display:inline-block; background:var(--soft); color:var(--accent-d); font-size:12px; font-weight:700; padding:3px 10px; border-radius:999px}
 .wmeta{display:inline-block; margin-top:10px; font-size:12px; color:var(--accent-d)}
 .wcard.locked{opacity:.55; pointer-events:none}
+.adminbar{background:#fff7e6; border:1px solid #f0d9a8; border-radius:12px; padding:12px 14px; margin-bottom:18px; font-size:14px; color:#6b5a2e; line-height:1.7}
+.adminbar b{color:#8a6d28}
+.adminbar code{background:rgba(0,0,0,.05); padding:1px 6px; border-radius:5px; font-size:13px}
+.adminbar .btn{margin-left:4px; padding:6px 12px; font-size:13px}
+.pubflag{font-size:10px; font-weight:700; padding:2px 7px; border-radius:999px; margin-left:6px; vertical-align:middle}
+.pubflag.on{background:rgba(111,138,99,.18); color:var(--accent-d)}
+.pubflag.off{background:#ece8e0; color:#a59c8c}
 .reset{text-align:center; margin-top:30px}
 .reset button{background:none; border:none; color:#b9b2a4; font-size:12px; cursor:pointer; text-decoration:underline}
 

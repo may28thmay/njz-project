@@ -130,9 +130,9 @@ const COURSE = {
             { label: "막으려", q: "잘못됐을 때의 손해·실수를 막으려 움직인다" },
             { label: "빈틈없이", q: "안전하게, 빈틈없이 하려 신경 쓴다" }
           ] },
-        { type: "choices", id: "w2_core_fear", multi: true, max: 2, title: "생각만 해도 가장 피하고 싶은 건? (최대 2개)",
+        { type: "choices", id: "w2_core_fear", multi: true, max: 2, allowOther: true, title: "생각만 해도 가장 피하고 싶은 건? (최대 2개)",
           options: ["실패하고 무능해 보이는 것","거절·버림받는 것","통제·자유를 잃는 것","의미 없이 흘러가는 것","갈등·미움받는 것"] },
-        { type: "choices", id: "w2_procrastinate", multi: true, title: "해야 할 걸 미룰 때, 이유에 가까운 걸 다 골라요",
+        { type: "choices", id: "w2_procrastinate", multi: true, allowOther: true, title: "해야 할 걸 미룰 때, 이유에 가까운 걸 다 골라요",
           options: ["어디서 시작할지 막막해서","잘 못할까 봐","재미·의미가 없어서","더 급한 게 늘 있어서","마음이 지쳐서"] },
         { type: "assess", id: "w2_coping", optional: true, noRadar: true, title: "감당 안 되는 일이 닥치면 — 얼마나 그런가요?",
           scale: ["매우 아니다","아니다","보통","그렇다","매우 그렇다"],
@@ -161,7 +161,7 @@ const COURSE = {
             { label: "누구나", q: "누구나 겪는 일이라 여긴다" },
             { label: "나만", q: "나만 이런가 싶어 위축된다" }
           ] },
-        { type: "choices", id: "w2_impulse", multi: true, optional: true, title: "갑자기 뭔가 하고/사고 싶어질 때, 직전 내 상태는? (해당되는 것 다)",
+        { type: "choices", id: "w2_impulse", multi: true, optional: true, allowOther: true, title: "갑자기 뭔가 하고/사고 싶어질 때, 직전 내 상태는? (해당되는 것 다)",
           options: ["스트레스·답답함","지루함·공허함","뿌듯함·보상심리","외로움·허전함","불안·초조"] },
         { type: "promptForge", id: "w2_ai", title: "AI와 함께 곱씹기", reframeId: "w2_reframe", reframeHint: "AI 답을 그대로 믿지 말고, 내 걸로 소화하는 게 핵심이에요. AI는 내가 준 것만 비춰줄 뿐이에요.",
           intro: "여기까지 고른 선택들을 모아, AI에게 물어볼 프롬프트를 만들었어요. 복사해서 ChatGPT나 Claude에 붙여넣고, 돌아온 답을 아래에서 곱씹어요. (AI는 내가 준 것만 비춰줄 뿐이에요.)",

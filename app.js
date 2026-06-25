@@ -177,6 +177,8 @@
       case "list": return !!(Array.isArray(v) && v.some(function (x) { return x && String(x).trim(); }));
       case "promptForge": if (!s.reframeId) return false; var r = A[s.reframeId]; return !!(r && Object.keys(r).some(function (k) { return r[k] && String(r[k]).trim(); }));
       case "choices": return !!(v && ((v.picked && v.picked.length) || (v.other && v.other.trim())));
+      case "shadow": return !!(v && v.picked && v.picked.length);
+      case "gap": return false;
       case "cardFilter": return !!(v && ((v.l1 && v.l1.length) || (v.l2 && v.l2.length)));
       case "mandala": return !!(v && (v.center || (v.cells && v.cells.some(function (c) { return c; }))));
       case "sliders": return !!(v && Object.keys(v).length);
@@ -209,20 +211,28 @@
     for (var i = 0; i < n; i++) { var a = Math.PI * 2 * i / n - Math.PI / 2; p += (cx + r * Math.cos(a)).toFixed(1) + "," + (cy + r * Math.sin(a)).toFixed(1) + " "; }
     return p.trim();
   }
-  function radarInner(items, vals) {
+  function radarInner(items, vals, vals2) {
     var n = items.length, cx = 110, cy = 110, R = 80, max = 10, out = "";
     [0.25, 0.5, 0.75, 1].forEach(function (t) { out += '<polygon points="' + ring(n, cx, cy, R * t) + '" class="rgrid"/>'; });
-    var shape = "", labels = "";
+    function poly(vv, cls) {
+      var sh = "";
+      for (var j = 0; j < n; j++) {
+        var aa = Math.PI * 2 * j / n - Math.PI / 2;
+        var raw = (vv && vv[items[j]] != null) ? vv[items[j]] : 5, r = R * raw / max;
+        sh += (cx + r * Math.cos(aa)).toFixed(1) + "," + (cy + r * Math.sin(aa)).toFixed(1) + " ";
+      }
+      return '<polygon points="' + sh.trim() + '" class="' + cls + '"/>';
+    }
+    var labels = "";
     for (var i = 0; i < n; i++) {
       var a = Math.PI * 2 * i / n - Math.PI / 2;
       var ex = cx + R * Math.cos(a), ey = cy + R * Math.sin(a);
       out += '<line x1="' + cx + '" y1="' + cy + '" x2="' + ex.toFixed(1) + '" y2="' + ey.toFixed(1) + '" class="raxis"/>';
-      var raw = (vals && vals[items[i]] != null) ? vals[items[i]] : 5, r = R * raw / max;
-      shape += (cx + r * Math.cos(a)).toFixed(1) + "," + (cy + r * Math.sin(a)).toFixed(1) + " ";
       var lx = cx + (R + 18) * Math.cos(a), ly = cy + (R + 18) * Math.sin(a);
       labels += '<text x="' + lx.toFixed(1) + '" y="' + (ly + 3).toFixed(1) + '" class="rlabel" text-anchor="middle">' + esc(items[i]) + "</text>";
     }
-    return out + '<polygon points="' + shape.trim() + '" class="rshape"/>' + labels;
+    if (vals2) out += poly(vals2, "rshape want");
+    return out + poly(vals, "rshape") + labels;
   }
 
   /* ---------- 컴포넌트 렌더 ---------- */
@@ -368,6 +378,55 @@
       group("● 나만 고른 강점", "내가 아는 나의 강점(아직 남에겐 덜 보이는)", onlyMine) +
       group("○ " + (s.otherLabel || "친구") + "만 본 강점", "내가 몰랐던, 남이 본 강점(blind spot)", onlyOther) +
       "</div>";
+  }
+  function compShadow(s) {
+    var picks = selOf(s.strengthsFrom);
+    var hint = s.hint ? '<p class="hint">' + esc(s.hint) + "</p>" : "";
+    if (!picks.length) return hint + '<p class="hint">' + esc(s.emptyHint || "먼저 강점을 골라주세요.") + "</p>";
+    var sel = choice(s.id).picked || [];
+    var mx = s.max || 0;
+    var counter = mx ? '<p class="hint cnt' + (sel.length === mx ? " done" : "") + '"><b><span id="' + s.id + '_cnt">' + sel.length + " / " + mx + "</span></b> 선택</p>" : "";
+    var rows = picks.map(function (w) {
+      var sh = (typeof SHADOW_MAP !== "undefined" && SHADOW_MAP[w]) || [];
+      if (!sh.length) return "";
+      var chips = sh.map(function (x) {
+        var on = sel.indexOf(x) >= 0 ? " on" : "";
+        return '<button class="chip' + on + '" onclick="toggleChoice(\'' + s.id + "','" + esc(x).replace(/'/g, "") + "',this,true," + mx + ')">' + esc(x) + "</button>";
+      }).join("");
+      return '<div class="shadowrow"><span class="slabel">' + esc(w) + ' →</span><div class="chips">' + chips + "</div></div>";
+    }).join("");
+    return hint + counter + '<div class="shadowbox">' + rows + "</div>";
+  }
+  function compGap(s) {
+    var now = sl(s.nowFrom) || {}, want = sl(s.wantFrom) || {};
+    var hint = s.hint ? '<p class="hint">' + esc(s.hint) + "</p>" : "";
+    var wk = getWeek(CUR.weekId) || {};
+    var src = (wk.steps || []).filter(function (x) { return x.id === s.nowFrom; })[0] || {};
+    var items = (src.areas || []).map(function (a) { return a.label; });
+    if (!Object.keys(now).length || !Object.keys(want).length || !items.length)
+      return hint + '<p class="hint">' + esc(s.emptyHint || "") + "</p>";
+    var gaps = items.map(function (lb) {
+      var nv = now[lb] != null ? now[lb] : 5, wv = want[lb] != null ? want[lb] : 5;
+      return { label: lb, gap: wv - nv, want: wv };
+    }).filter(function (g) { return g.gap > 0; })
+      .sort(function (a, b) { return (b.gap - a.gap) || (b.want - a.want); });
+    var top = gaps.slice(0, s.topN || 3).map(function (g) { return g.label; });
+    var svg = '<svg class="radar" id="radar" viewBox="0 0 220 220">' + radarInner(items, now, want) + "</svg>";
+    var legend = '<p class="gaplegend"><span class="gk now">지금</span> <span class="gk want">바람</span></p>';
+    var msg = top.length
+      ? '<p class="gapmsg">가장 바라지만 가장 빈 곳: <b>' + top.map(function (x) { return esc(x); }).join(", ") + "</b></p>"
+      : '<p class="gapmsg">지금과 바람이 대체로 가까워요.</p>';
+    return hint + svg + legend + msg;
+  }
+  function gapTop(nowId, wantId, n) {
+    var now = A[nowId] || {}, want = A[wantId] || {};
+    var src = (getWeek("w4b").steps.filter(function (x) { return x.id === nowId; })[0] || {});
+    var areas = src.areas || [];
+    var g = areas.map(function (a) {
+      var nv = now[a.label], wv = want[a.label];
+      return (nv != null && wv != null) ? { l: a.label, d: wv - nv } : null;
+    }).filter(Boolean).filter(function (x) { return x.d > 0; }).sort(function (a, b) { return b.d - a.d; });
+    return g.slice(0, n).map(function (x) { return x.l; }).join(", ");
   }
   function compLog(s) {
     if (!A[s.id]) { A[s.id] = []; for (var k = 0; k < 7; k++) { var o = {}; s.fields.forEach(function (f) { o[f.key] = ""; }); A[s.id].push(o); } save(); }
@@ -675,6 +734,8 @@
       case "sliders": body = compSliders(s); break;
       case "assess": body = compAssess(s); break;
       case "compare": body = compCompare(s); break;
+      case "shadow": body = compShadow(s); break;
+      case "gap": body = compGap(s); break;
       case "dailyLog": body = compLog(s); break;
       case "meetup": body = compMeetup(s.meetup); break;
       case "promptForge": body = compPromptForge(s); break;
@@ -800,14 +861,14 @@
       bookBlock("친구가 본 나의 강점", fmtChoices("w3_others")) +
       bookBlock("강점 비교 (겹침 / 나만 / 친구만)", cmpLine("w3_strengths", "w3_others")) +
       bookBlock("비교해보니", fmtChoices("w3_gap")) +
-      bookBlock("보완하고 싶은 약점", fmtChoices("w3_weak")) +
+      bookBlock("강점의 그림자 — 내가 인정한", fmtChoices("w3_shadow_pick")) +
       bookBlock("강점이 드러나는 양식", fmtChoices("w3_shine")) +
-      bookBlock("강점의 다른 얼굴 (과사용)", fmtChoices("w3_shadow")) +
+      bookBlock("강점의 다른 얼굴 — 남이 보는", fmtChoices("w3_shadow")) +
       bookBlock("강점을 더 키우는 실험", A.w3_strength_use) +
       bookBlock("AI와 곱씹어 다시 쓴 강점", (A.w3_reframe && A.w3_reframe.mine) || "") + "</div>" +
 
       '<div class="chapter ch4">' + chapHead("2부", "나의 현재 지도", STK.cloud) +
-      '<div class="bq"><h4>지금 내 삶의 영역</h4><svg class="radar" viewBox="0 0 220 220">' + radarInner(areaItems, radarVals) + "</svg></div>" +
+      '<div class="bq"><h4>지금 / 바라는 내 삶의 영역</h4><svg class="radar" viewBox="0 0 220 220">' + radarInner(areaItems, radarVals, A.w4_want || null) + '</svg><p class="gaplegend"><span class="gk now">지금</span> <span class="gk want">바람</span></p></div>' +
       bookBlock("돈·경제 — 지금", fmtChoices("w4_money_now")) +
       bookBlock("건강·몸 — 지금", fmtChoices("w4_body_now")) +
       bookBlock("일·커리어 — 지금", fmtChoices("w4_work_now")) +
@@ -816,6 +877,7 @@
       bookBlock("관계 — 지금", fmtChoices("w4b_rel_now")) +
       bookBlock("일상·공간 — 지금", fmtChoices("w4b_life_now")) +
       bookBlock("놀이·쉼 — 지금", fmtChoices("w4b_play_now")) +
+      bookBlock("지금과 바람의 가장 큰 격차", gapTop("w4_areas", "w4_want", 3)) +
       bookBlock("가장 채우고 싶은 영역", fmtChoices("w4_fill")) +
       bookBlock("레이더로 본 균형", fmtChoices("w4_balance")) +
       bookBlock("AI와 곱씹어 다시 쓴 토대(돈·건강·일·배움)", (A.w4_reframe && A.w4_reframe.mine) || "") +

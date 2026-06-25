@@ -35,6 +35,9 @@
 
   /* ---------- 입력 핸들러 (인라인에서 호출) ---------- */
   window.setText = function (id, v) { A[id] = v; save(); };
+  function listData(id) { if (!Array.isArray(A[id])) A[id] = []; return A[id]; }
+  window.setListItem = function (id, i, v) { var a = listData(id); a[i] = v; save(); };
+  window.addListRow = function (id) { listData(id).push(""); save(); renderStep(); };
 
   function choice(id) {
     if (!A[id]) A[id] = { picked: [], other: "" };
@@ -171,6 +174,8 @@
     var v = A[s.id];
     switch (s.type) {
       case "text": return !!(v && v.trim());
+      case "list": return !!(Array.isArray(v) && v.some(function (x) { return x && String(x).trim(); }));
+      case "promptForge": if (!s.reframeId) return false; var r = A[s.reframeId]; return !!(r && (r.resonate || r.doubt || r.mine || r.answer));
       case "choices": return !!(v && ((v.picked && v.picked.length) || (v.other && v.other.trim())));
       case "cardFilter": return !!(v && ((v.l1 && v.l1.length) || (v.l2 && v.l2.length)));
       case "mandala": return !!(v && (v.center || (v.cells && v.cells.some(function (c) { return c; }))));
@@ -190,7 +195,13 @@
       default: return false;
     }
   }
-  function inputSteps(week) { return week.steps.filter(function (s) { return s.type !== "intro" && s.type !== "promptForge" && !s.optional; }); }
+  function inputSteps(week) {
+    return week.steps.filter(function (s) {
+      if (s.optional || s.type === "intro") return false;
+      if (s.type === "promptForge") return !!s.reframeId;
+      return true;
+    });
+  }
 
   /* ---------- 레이더 ---------- */
   function ring(n, cx, cy, r) {
@@ -223,6 +234,24 @@
       ? '<textarea rows="5" placeholder="' + ph + '" oninput="setText(\'' + s.id + '\',this.value)">' + esc(v) + "</textarea>"
       : '<input type="text" placeholder="' + ph + '" value="' + esc(v) + '" oninput="setText(\'' + s.id + '\',this.value)">';
     return hint + field;
+  }
+  function compList(s) {
+    var a = listData(s.id);
+    var hint = s.hint ? '<p class="hint">' + esc(s.hint) + "</p>" : "";
+    var rowInput = function (i, label, ph) {
+      return '<label class="listrow">' + (label ? "<span>" + esc(label) + "</span>" : "") +
+        '<input type="text" placeholder="' + esc(ph || "") + '" value="' + esc(a[i] || "") +
+        '" oninput="setListItem(\'' + s.id + "'," + i + ',this.value)"></label>';
+    };
+    var rows = "";
+    if (s.items) {
+      rows = s.items.map(function (it, i) { return rowInput(i, it.label, it.placeholder); }).join("");
+      return hint + '<div class="listbox">' + rows + "</div>";
+    }
+    var n = Math.max(s.rows || 2, a.length);
+    for (var i = 0; i < n; i++) rows += rowInput(i, "", s.placeholder);
+    var add = s.addable ? '<div class="rowbtn"><button class="btn ghost addrow" onclick="addListRow(\'' + s.id + '\')">+ 칸 추가</button></div>' : "";
+    return hint + '<div class="listbox">' + rows + "</div>" + add;
   }
   function compChoices(s) {
     var c = choice(s.id);
@@ -364,6 +393,7 @@
     var v = A[id];
     if (v == null) return "";
     if (typeof v === "string") return v;
+    if (Array.isArray(v)) return v.filter(function (x) { return x && String(x).trim(); }).join(", ");
     if (v.picked !== undefined) return fmtChoices(id);
     if (v.like !== undefined) {
       var ip = [];
@@ -399,11 +429,18 @@
   }
   function compPromptForge(s) {
     var intro = s.intro ? '<p class="hint">' + esc(s.intro) + "</p>" : "";
-    return intro +
+    var out = intro +
       '<textarea class="promptbox" rows="10" readonly>' + esc(buildPrompt(s)) + "</textarea>" +
       '<div class="rowbtn"><button class="btn" onclick="copyPrompt(this)">프롬프트 복사</button> ' +
       '<a class="btn ghost" href="https://claude.ai/new" target="_blank" rel="noopener">Claude 열기</a> ' +
       '<a class="btn ghost" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT 열기</a></div>';
+    if (s.reframeId) {
+      var rv = reframe(s.reframeId);
+      out += '<div class="forgeline"></div>' +
+        '<label class="rfield"><span>AI 답을 여기에 붙여넣기</span><textarea rows="6" placeholder="복사한 프롬프트를 AI에 넣고, 받은 답을 여기 붙여두면 아래에서 곱씹기 편해요." oninput="setReframe(\'' + s.reframeId + '\',\'answer\',this.value)">' + esc(rv.answer || "") + "</textarea></label>" +
+        compReframe({ id: s.reframeId, hint: s.reframeHint });
+    }
+    return out;
   }
   function reframe(id) { if (!A[id]) A[id] = { resonate: "", doubt: "", mine: "" }; return A[id]; }
   window.setReframe = function (id, k, v) { reframe(id)[k] = v; save(); };
@@ -611,6 +648,7 @@
     switch (s.type) {
       case "intro": body = '<p class="introbody">' + nl2br(s.body) + "</p>"; break;
       case "text": body = compText(s); break;
+      case "list": body = compList(s); break;
       case "choices": body = compChoices(s); break;
       case "cardFilter": body = compCard(s); break;
       case "mandala": body = compMandala(s); break;
@@ -637,9 +675,16 @@
     var isLast = CUR.idx === list.length - 1;
     var nextHref = isLast ? "#home" : "#" + week.id + "/" + (CUR.idx + 1);
     var nextLabel = isLast ? "이 주차 마치기 ✓" : "다음 →";
+    var tocOpts = list.map(function (st, i) {
+      var mark = (st.type !== "intro" && st.type !== "meetup" && !st.optional && hasAns(st)) ? "✓ " : "";
+      var t = st.title || (st.type === "meetup" ? "함께" : "");
+      return '<option value="' + i + '"' + (i === CUR.idx ? " selected" : "") + ">" + esc(mark + (i + 1) + ". " + t) + "</option>";
+    }).join("");
+    var toc = '<select class="toc" onchange="location.hash=\'#' + week.id + '/\'+this.value" aria-label="이 주차 목차">' + tocOpts + "</select>";
     document.getElementById("app").innerHTML =
       '<section class="step">' +
       '<div class="crumbs"><a href="#home">홈</a> · ' + esc(week.badge) + " · " + (CUR.idx + 1) + "/" + list.length + "</div>" +
+      '<div class="tocwrap">' + toc + "</div>" +
       '<div class="pbar"><i style="width:' + pct + '%"></i></div>' +
       '<div class="jtitle">' + esc(week.title) + "</div>" +
       "<h2>" + esc(s.title) + (s.optional ? ' <span class="opthint">· 원하면</span>' : "") + "</h2>" +
@@ -712,7 +757,7 @@
       '<div class="chapter ch2">' + chapHead("1부", "나의 작동방식", STK.sprout) +
       bookBlock("집중이 잘 될 때", fmtChoices("w2_focus_when")) +
       bookBlock("금방 흩어질 때", fmtChoices("w2_focus_break")) +
-      bookBlock("시간 가는 줄 모르고 빠져드는 일", A.w2_flow) +
+      bookBlock("시간 가는 줄 모르고 빠져드는 일", fmtAny("w2_flow")) +
       bookBlock("에너지가 가장 좋은 시간대", fmtChoices("w2_energy_peak")) +
       bookBlock("나를 움직이는 상황", fmtChoices("w2_drive")) +
       bookBlock("절대 안 움직이는 상황", fmtChoices("w2_never")) +
@@ -727,9 +772,9 @@
 
       '<div class="chapter ch3">' + chapHead("", "나의 강점 지도", STK.star) +
       bookBlock("나의 대표 강점", fmtAny("w3_strengths")) +
-      bookBlock("강점이 드러난 순간", A.w3_evidence) +
-      bookBlock("남들은 어려운데 나는 쉬운 일", A.w3_easy) +
-      bookBlock("사람들이 고마워하는 것", A.w3_thank) +
+      bookBlock("강점이 드러난 순간", fmtAny("w3_evidence")) +
+      bookBlock("남들은 어려운데 나는 쉬운 일", fmtAny("w3_easy")) +
+      bookBlock("사람들이 고마워하는 것", fmtAny("w3_thank")) +
       bookBlock("친구가 본 나의 강점", fmtChoices("w3_others")) +
       bookBlock("강점 비교 (겹침 / 나만 / 친구만)", cmpLine("w3_strengths", "w3_others")) +
       bookBlock("비교해보니", fmtChoices("w3_gap")) +
@@ -763,12 +808,12 @@
       bookBlock("가까워질 때의 나", fmtChoices("w6_attach_close")) +
       bookBlock("갈등할 때의 나", fmtChoices("w6_conflict")) +
       bookBlock("도움이 필요할 때의 나", fmtChoices("w6_boundary")) +
-      bookBlock("죽기 전 해보고 싶은 것", A.w6_challenge) +
+      bookBlock("죽기 전 해보고 싶은 것", fmtAny("w6_challenge")) +
       bookBlock("깨고 싶은 두려움 · 한계", A.w6_fear) +
       bookBlock("AI와 곱씹어 다시 본 나의 관계", (A.w6_reframe && A.w6_reframe.mine) || "") +
       bookBlock("일에서 원하는 것", fmtChoices("w7_next_work")) +
       bookBlock("네 가지가 만나는 곳", fmtAny("w7_ikigai")) +
-      bookBlock("3 · 7 · 10년 후의 나", A.w8_futures) +
+      bookBlock("3 · 7 · 10년 후의 나", fmtAny("w8_futures")) +
       bookBlock("어떻게 기억되고 싶은지", A.w8_epitaph) +
       bookBlock("나의 생의 목표", A.w8_lifegoal) +
       bookBlock("내 가치의 우선순위", fmtAny("w8_priority")) +
@@ -800,10 +845,10 @@
       bookBlock("한 주 실험 소감", A.w10_week) +
       bookBlock("실험 결과", A.w11_result) +
       bookBlock("배운 것 · 의외인 것", A.w11_learn) +
-      bookBlock("계속할 것 / 그만둘 것", A.w11_keep) + "</div>" +
+      bookBlock("계속할 것 / 그만둘 것", fmtAny("w11_keep")) + "</div>" +
 
       '<div class="chapter ch10">' + chapHead("맺음", "다음 1년의 나에게", STK.heart) +
-      bookBlock("3개월 돌아보기", A.w12_recap) +
+      bookBlock("3개월 돌아보기", fmtAny("w12_recap")) +
       bookBlock("다음 1년의 나에게", A.w12_next1y) +
       bookBlock("나만의 주문", A.w12_spell) + "</div>" +
       "</section>";

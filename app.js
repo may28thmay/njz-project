@@ -211,6 +211,15 @@
       return true;
     });
   }
+  // 홈 '채움' 표시용: 답할 수 있는 모든 문항(옵션 포함, 순수 표시·안내 제외)
+  function answerableSteps(week) {
+    return week.steps.filter(function (s) {
+      if (!s.id) return false;
+      if (s.type === "intro" || s.type === "meetup" || s.type === "compare" || s.type === "gap") return false;
+      if (s.type === "promptForge") return !!s.reframeId;
+      return true;
+    });
+  }
 
   /* ---------- 레이더 ---------- */
   function ring(n, cx, cy, r) {
@@ -749,7 +758,7 @@
       if (!pub && !admin) {
         return '<div class="wcard locked"><div class="wbadge">' + esc(w.badge) + "</div><h3>준비 중</h3><p>곧 열려요</p></div>";
       }
-      var ins = inputSteps(w), done = ins.filter(hasAns).length;
+      var ins = answerableSteps(w), done = ins.filter(hasAns).length;
       var meta = done ? done + "/" + ins.length + " 채움" : "시작 전";
       var flag = admin ? '<span class="pubflag ' + (pub ? "on" : "off") + '">' + (pub ? "공개" : "비공개") + "</span>" : "";
       return '<a class="wcard" href="#' + w.id + '/0"><div class="wbadge">' + esc(w.badge) + flag + "</div>" +

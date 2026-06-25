@@ -110,6 +110,10 @@ main{max-width:720px; margin:0 auto; padding:28px 20px 80px}
 .shadowrow{display:flex; flex-direction:column; gap:7px; padding-bottom:12px; border-bottom:1px solid var(--line)}
 .shadowrow:last-child{border-bottom:none}
 .shadowrow .slabel{font-weight:700; color:var(--accent-d); font-size:14px}
+.bsrow{display:flex; flex-direction:column; gap:7px; padding-bottom:12px; border-bottom:1px solid var(--line)}
+.bsrow:last-child{border-bottom:none}
+.bsrow .slabel{font-weight:700; color:var(--accent-d); font-size:14px}
+.bsrow input[type=text]{width:100%}
 .radar{display:block; width:280px; max-width:100%; margin:10px auto 0}
 .rgrid{fill:none; stroke:var(--line)}
 .raxis{stroke:var(--line)}

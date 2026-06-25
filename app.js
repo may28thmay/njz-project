@@ -178,6 +178,7 @@
       case "promptForge": if (!s.reframeId) return false; var r = A[s.reframeId]; return !!(r && Object.keys(r).some(function (k) { return r[k] && String(r[k]).trim(); }));
       case "choices": return !!(v && ((v.picked && v.picked.length) || (v.other && v.other.trim())));
       case "shadow": return !!(v && v.picked && v.picked.length);
+      case "byStrength": return !!(v && typeof v === "object" && Object.keys(v).some(function (k) { var x = v[k]; return (typeof x === "string" && x.trim()) || (x && x.picked && x.picked.length); }));
       case "gap": return false;
       case "cardFilter": return !!(v && ((v.l1 && v.l1.length) || (v.l2 && v.l2.length)));
       case "mandala": return !!(v && (v.center || (v.cells && v.cells.some(function (c) { return c; }))));
@@ -397,6 +398,46 @@
     }).join("");
     return hint + counter + '<div class="shadowbox">' + rows + "</div>";
   }
+  function pstr(id) { var v = A[id]; if (!v || typeof v !== "object" || Array.isArray(v)) A[id] = {}; return A[id]; }
+  window.setStrengthText = function (id, key, v) { pstr(id)[key] = v; save(); };
+  window.toggleStrengthChip = function (id, key, label, el, max) {
+    var o = pstr(id), c = o[key];
+    if (!c || !Array.isArray(c.picked)) { c = { picked: [], other: "" }; o[key] = c; }
+    var i = c.picked.indexOf(label);
+    if (i >= 0) c.picked.splice(i, 1);
+    else { if (max && c.picked.length >= max) return; c.picked.push(label); }
+    el.classList.toggle("on", c.picked.indexOf(label) >= 0); save();
+  };
+  window.addStrengthOther = function (id, key, el) {
+    var val = (el.value || "").trim(); if (!val) return;
+    var o = pstr(id), c = o[key];
+    if (!c || !Array.isArray(c.picked)) { c = { picked: [], other: "" }; o[key] = c; }
+    if (c.picked.indexOf(val) < 0) c.picked.push(val); save(); el.value = ""; renderStep();
+  };
+  function compByStrength(s) {
+    var picks = selOf(s.strengthsFrom);
+    var hint = s.hint ? '<p class="hint">' + esc(s.hint) + "</p>" : "";
+    if (!picks.length) return hint + '<p class="hint">' + esc(s.emptyHint || "먼저 강점을 골라주세요.") + "</p>";
+    var o = pstr(s.id), mx = s.max || 0;
+    var rows = picks.map(function (w) {
+      var key = esc(w).replace(/'/g, "");
+      if (s.mode === "text") {
+        var val = (typeof o[w] === "string") ? o[w] : "";
+        return '<div class="bsrow"><span class="slabel">' + esc(w) + "</span>" +
+          '<input type="text" placeholder="' + esc(s.placeholder || "") + '" value="' + esc(val) +
+          '" oninput="setStrengthText(\'' + s.id + "','" + key + '\',this.value)"></div>';
+      }
+      var c = (o[w] && Array.isArray(o[w].picked)) ? o[w] : { picked: [], other: "" };
+      var chip = function (opt, on) {
+        return '<button class="chip' + (on ? " on" : "") + '" onclick="toggleStrengthChip(\'' + s.id + "','" + key + "','" + esc(opt).replace(/'/g, "") + "',this," + mx + ')">' + esc(opt) + "</button>";
+      };
+      var chips = (s.options || []).map(function (opt) { return chip(opt, c.picked.indexOf(opt) >= 0); }).join("");
+      var custom = c.picked.filter(function (p) { return (s.options || []).indexOf(p) < 0; }).map(function (p) { return chip(p, true); }).join("");
+      var other = s.allowOther ? '<input type="text" class="other" placeholder="직접 쓰기 후 Enter ↵" onkeydown="if(event.key===\'Enter\'){event.preventDefault();addStrengthOther(\'' + s.id + "','" + key + '\',this);}">' : "";
+      return '<div class="bsrow"><span class="slabel">' + esc(w) + ' →</span><div class="chips">' + chips + custom + "</div>" + other + "</div>";
+    }).join("");
+    return hint + '<div class="shadowbox">' + rows + "</div>";
+  }
   function compGap(s) {
     var now = sl(s.nowFrom) || {}, want = sl(s.wantFrom) || {};
     var hint = s.hint ? '<p class="hint">' + esc(s.hint) + "</p>" : "";
@@ -480,7 +521,13 @@
     if (v.center !== undefined) return [v.center].concat(v.cells || []).filter(function (x) { return x; }).join(" / ");
     if (v.v !== undefined) return v.v.filter(function (x) { return x; }).join(", ");
     if (v.mine !== undefined) return v.mine || "";
-    if (typeof v === "object") return Object.keys(v).map(function (k) { return k + " " + v[k]; }).join(", ");
+    if (typeof v === "object") {
+      var bk = Object.keys(v);
+      if (bk.length && bk.every(function (k) { var x = v[k]; return typeof x === "string" || (x && Array.isArray(x.picked)); })) {
+        return bk.map(function (k) { var x = v[k]; var t = (typeof x === "string") ? x : (x.picked || []).join(", "); return (t && t.trim()) ? (k + ": " + t) : ""; }).filter(Boolean).join(" / ");
+      }
+      return bk.map(function (k) { return k + " " + v[k]; }).join(", ");
+    }
     return "";
   }
   function topAssess(id, n) {
@@ -735,6 +782,7 @@
       case "assess": body = compAssess(s); break;
       case "compare": body = compCompare(s); break;
       case "shadow": body = compShadow(s); break;
+      case "byStrength": body = compByStrength(s); break;
       case "gap": body = compGap(s); break;
       case "dailyLog": body = compLog(s); break;
       case "meetup": body = compMeetup(s.meetup); break;
@@ -862,8 +910,9 @@
       bookBlock("강점 비교 (겹침 / 나만 / 친구만)", cmpLine("w3_strengths", "w3_others")) +
       bookBlock("비교해보니", fmtChoices("w3_gap")) +
       bookBlock("강점의 그림자 — 내가 인정한", fmtChoices("w3_shadow_pick")) +
-      bookBlock("강점이 드러나는 양식", fmtChoices("w3_shine")) +
+      bookBlock("강점이 드러나는 양식", fmtAny("w3_shine")) +
       bookBlock("강점의 다른 얼굴 — 남이 보는", fmtChoices("w3_shadow")) +
+      bookBlock("보완하고 싶은 약점", fmtChoices("w3_weak")) +
       bookBlock("강점을 더 키우는 실험", A.w3_strength_use) +
       bookBlock("AI와 곱씹어 다시 쓴 강점", (A.w3_reframe && A.w3_reframe.mine) || "") + "</div>" +
 

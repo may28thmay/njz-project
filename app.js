@@ -190,6 +190,7 @@
       case "mandala": return !!(v && (v.center || (v.cells && v.cells.some(function (c) { return c; }))));
       case "sliders": return !!(v && Object.keys(v).length);
       case "assess": return !!(v && Object.keys(v).length);
+      case "big5": return !!(v && v.domains && Object.keys(v.domains).length);
       case "dailyLog": return !!(v && v.some(function (d) { return Object.keys(d).some(function (k) { return d[k] && String(d[k]).trim(); }); }));
       case "reframe": return !!(v && (v.resonate || v.doubt || v.mine));
       case "digest": return !!(v && Object.keys(v).some(function (k) { return v[k] && String(v[k]).trim(); }));
@@ -227,8 +228,8 @@
     for (var i = 0; i < n; i++) { var a = Math.PI * 2 * i / n - Math.PI / 2; p += (cx + r * Math.cos(a)).toFixed(1) + "," + (cy + r * Math.sin(a)).toFixed(1) + " "; }
     return p.trim();
   }
-  function radarInner(items, vals, vals2) {
-    var n = items.length, cx = 110, cy = 110, R = 80, max = 10, out = "";
+  function radarInner(items, vals, vals2, maxArg) {
+    var n = items.length, cx = 110, cy = 110, R = 80, max = maxArg || 10, out = "";
     [0.25, 0.5, 0.75, 1].forEach(function (t) { out += '<polygon points="' + ring(n, cx, cy, R * t) + '" class="rgrid"/>'; });
     function poly(vv, cls) {
       var sh = "";
@@ -359,6 +360,81 @@
     var items = s.areas.map(function (a) { return a.label; });
     var svg = '<svg class="radar" id="radar" viewBox="0 0 220 220">' + radarInner(items, vals) + "</svg>";
     return hint + '<div class="assess">' + rows + "</div>" + svg;
+  }
+  /* ---------- BIG5 (성격 5요인) ---------- */
+  function big5Data(id) { if (!A[id]) A[id] = { raw: "", domains: {}, facets: {} }; return A[id]; }
+  function b5LevelTok(seg) {
+    if (/높/.test(seg)) return "high";
+    if (/낮/.test(seg)) return "low";
+    if (/보통|중간/.test(seg)) return "neutral";
+    return "";
+  }
+  function b5ScoreLevel(sc) { return sc >= 84 ? "high" : (sc <= 60 ? "low" : "neutral"); }
+  function parseBig5(text, domains) {
+    // facet 슬롯(도메인×6, 결과지 출력 순서)
+    var slots = [];
+    domains.forEach(function (d) { d.facets.forEach(function (f) { slots.push({ domain: d.key, name: f }); }); });
+    // "점수: N (high/low/neutral)" 순서대로 추출
+    var re = /점수\s*:\s*(\d+)\s*\((high|low|neutral)\)/g, m, scores = [];
+    while ((m = re.exec(text)) !== null) scores.push({ score: +m[1], level: m[2] });
+    var facets = {}, agg = {};
+    domains.forEach(function (d) { agg[d.key] = 0; });
+    var n = Math.min(scores.length, slots.length);
+    for (var i = 0; i < n; i++) {
+      facets[slots[i].name] = { score: scores[i].score, level: scores[i].level };
+      agg[slots[i].domain] += scores[i].score;
+    }
+    // 도메인 레벨: "당신의 … {도메인} … 점수는 높아/낮아" 문장에서 추출 (실패 시 점수 근사)
+    var domOut = {};
+    domains.forEach(function (d) {
+      var kw = (d.key === "개방성") ? "개방성" : d.key;
+      var dre = new RegExp("당신의[^\\n]*?" + kw + "[^\\n]{0,40}");
+      var mm = dre.exec(text);
+      var lvl = mm ? b5LevelTok(mm[0]) : "";
+      domOut[d.key] = { score: agg[d.key], level: lvl || b5ScoreLevel(agg[d.key]) };
+    });
+    return { domains: domOut, facets: facets };
+  }
+  window.setBig5 = function (id) {
+    var ta = document.getElementById(id + "_raw");
+    if (!ta) return;
+    var text = ta.value || "";
+    var doms = (CUR.step && CUR.step.domains) ? CUR.step.domains : [];
+    var parsed = parseBig5(text, doms);
+    A[id] = { raw: text, domains: parsed.domains, facets: parsed.facets };
+    save();
+    renderStep();
+  };
+  window.clearBig5 = function (id) { A[id] = { raw: "", domains: {}, facets: {} }; save(); renderStep(); };
+  var B5_LVL_KO = { high: "높음", low: "낮음", neutral: "중간" };
+  function compBig5(s) {
+    var d = big5Data(s.id);
+    var hasResult = d.domains && Object.keys(d.domains).length;
+    var out = (s.intro ? '<p class="hint">' + esc(s.intro) + "</p>" : "") +
+      '<div class="rowbtn"><a class="btn big" href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.linkLabel || "검사하러 가기") + " ↗</a></div>" +
+      '<label class="rfield"><span>검사 결과 페이지 전체를 복사해 붙여넣기</span>' +
+      '<textarea id="' + s.id + '_raw" rows="6" placeholder="결과지 전체(영역·세부 항목·점수)를 그대로 붙여넣어요.">' + esc(d.raw || "") + "</textarea></label>" +
+      '<div class="rowbtn"><button class="btn" onclick="setBig5(\'' + s.id + '\')">분석하기</button>' +
+      (hasResult ? ' <button class="btn ghost" onclick="clearBig5(\'' + s.id + '\')">지우기</button>' : "") + "</div>";
+    if (!hasResult) return out;
+    var items = s.domains.map(function (x) { return x.key; });
+    var vals = {};
+    items.forEach(function (k) { vals[k] = d.domains[k] ? d.domains[k].score : 0; });
+    out += '<svg class="radar" id="radar" viewBox="0 0 220 220">' + radarInner(items, vals, null, 120) + "</svg>";
+    out += '<div class="big5cards">' + s.domains.map(function (x) {
+      var dd = d.domains[x.key] || {};
+      return '<div class="big5card lv-' + (dd.level || "") + '"><b>' + esc(x.key) + '</b><span class="b5lv">' + esc(B5_LVL_KO[dd.level] || "") + '</span><span class="b5sc">' + (dd.score || 0) + "/120</span></div>";
+    }).join("") + "</div>";
+    var rows = s.domains.map(function (x) {
+      var fr = x.facets.map(function (f) {
+        var ff = d.facets[f] || {};
+        return '<tr><td>' + esc(f) + "</td><td>" + (ff.score != null ? ff.score : "") + "</td><td>" + esc(B5_LVL_KO[ff.level] || "") + "</td></tr>";
+      }).join("");
+      return '<tr class="b5dom"><td colspan="3"><b>' + esc(x.key) + "</b></td></tr>" + fr;
+    }).join("");
+    out += '<details class="big5facets"><summary>세부 항목 30개 자세히 보기</summary>' +
+      '<table class="b5tbl"><thead><tr><th>항목</th><th>점수</th><th>수준</th></tr></thead><tbody>' + rows + "</tbody></table></details>";
+    return out;
   }
   function selOf(id) {
     var v = A[id]; if (!v) return [];
@@ -509,6 +585,12 @@
     var v = A[id];
     if (v == null) return "";
     if (typeof v === "string") return v;
+    if (v.domains && typeof v.domains === "object" && Object.keys(v.domains).length) {
+      var dl = Object.keys(v.domains).map(function (k) { var x = v.domains[k]; return k + " " + (B5_LVL_KO[x.level] || "") + "(" + x.score + "/120)"; }).join(", ");
+      var ex = [];
+      if (v.facets) Object.keys(v.facets).forEach(function (f) { var x = v.facets[f]; if (x.level === "high" || x.level === "low") ex.push(f + " " + x.score + "(" + (B5_LVL_KO[x.level] || "") + ")"); });
+      return dl + (ex.length ? " · 두드러진 세부 항목: " + ex.join(", ") : "");
+    }
     if (Array.isArray(v)) return v.filter(function (x) { return x && String(x).trim(); }).join(", ");
     if (v.picked !== undefined) return fmtChoices(id);
     if (v.like !== undefined) {
@@ -806,6 +888,7 @@
       case "mandala": body = compMandala(s); break;
       case "sliders": body = compSliders(s); break;
       case "assess": body = compAssess(s); break;
+      case "big5": body = compBig5(s); break;
       case "compare": body = compCompare(s); break;
       case "shadow": body = compShadow(s); break;
       case "byStrength": body = compByStrength(s); break;

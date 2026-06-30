@@ -553,7 +553,7 @@
   }
   function gapTop(nowId, wantId, n) {
     var now = A[nowId] || {}, want = A[wantId] || {};
-    var src = (getWeek("w4b").steps.filter(function (x) { return x.id === nowId; })[0] || {});
+    var src = (getWeek("w4").steps.filter(function (x) { return x.id === nowId; })[0] || {});
     var areas = src.areas || [];
     var g = areas.map(function (a) {
       var nv = now[a.label], wv = want[a.label];
@@ -980,7 +980,7 @@
     var author = (A.author && A.author.trim()) || "나";
     var vals5 = (A.w1_journey && A.w1_journey.v) ? A.w1_journey.v.filter(function (x) { return x; }).join(" · ") : "";
     var radarVals = A.w4_areas || {};
-    var areaItems = getWeek("w4b").steps.filter(function (s) { return s.type === "assess"; })[0].areas.map(function (a) { return a.label; });
+    var areaItems = getWeek("w4").steps.filter(function (s) { return s.type === "assess"; })[0].areas.map(function (a) { return a.label; });
     var html =
       '<section class="book">' +
       '<div class="noprint bookbar"><a class="btn ghost" href="#home">← 홈</a><button class="btn" onclick="window.print()">PDF로 저장 / 인쇄</button></div>' +
@@ -1008,8 +1008,7 @@
       bookBlock("나를 움직이는 힘", topAssess("w2_regfocus", 2)) +
       bookBlock("가장 피하고 싶은 것", fmtChoices("w2_core_fear")) +
       bookBlock("미룰 때 진짜 이유", fmtChoices("w2_procrastinate")) +
-      bookBlock("힘든 감정을 다루는 법", topAssess("w2_emotion_reg", 2)) +
-      bookBlock("잘 안 될 때 나에게 건네는 말", topAssess("w2_selftalk", 2)) +
+      bookBlock("성격 5요인 (BIG5)", fmtAny("w2_big5")) +
       bookBlock("AI와 곱씹어 다시 쓴 작동방식", (A.w2_reframe && A.w2_reframe.mine) || "") + "</div>" +
 
       '<div class="chapter ch3">' + chapHead("", "나의 강점 지도", STK.star) +
@@ -1040,17 +1039,18 @@
       bookBlock("지금과 바람의 가장 큰 격차", gapTop("w4_areas", "w4_want", 3)) +
       bookBlock("가장 채우고 싶은 영역", fmtChoices("w4_fill")) +
       bookBlock("레이더로 본 균형", fmtChoices("w4_balance")) +
-      bookBlock("AI와 곱씹어 다시 쓴 토대(돈·건강·일·배움)", (A.w4_reframe && A.w4_reframe.mine) || "") +
-      bookBlock("AI와 곱씹어 다시 쓴 현재 지도 종합", (A.w4b_reframe && A.w4b_reframe.mine) || "") +
+      bookBlock("AI와 곱씹어 다시 쓴 현재 지도", (A.w4b_reframe && A.w4b_reframe.mine) || "") +
       '<div class="bq"><h4>채우고 싶은 영역 만다라트</h4>' + bookMandala("w4_mandala") + "</div></div>" +
 
       '<div class="chapter ch5">' + chapHead("3부", "내가 원하는 것", STK.heart) +
       bookBlock("결국 내가 원하는 것", A.w8_essence) +
       bookBlock("지난 한 달, 새로 알게 된 나", A.w5_review1m) +
       bookBlock("기분 좋게 하는 것들", fmtChoices("w5_joy")) +
+      bookBlock("이상적 하루에 바라는 결", topAssess("w5_day_ideal", 3)) +
       bookBlock("꿈꾸는 이상적인 하루", A.w5_dreamday) +
       bookBlock("원하는 삶의 속도 · 리듬", fmtChoices("w5_pace")) +
       bookBlock("만들고 싶은 습관", fmtChoices("w5_habit")) +
+      bookBlock("AI와 곱씹어 다시 쓴 라이프스타일", (A.w5_reframe && A.w5_reframe.mine) || "") +
       bookBlock("나에게 좋은 관계란", fmtChoices("w6_good_rel")) +
       bookBlock("가까워질 때의 나", fmtChoices("w6_attach_close")) +
       bookBlock("갈등할 때의 나", fmtChoices("w6_conflict")) +
@@ -1060,6 +1060,7 @@
       bookBlock("AI와 곱씹어 다시 본 나의 관계", (A.w6_reframe && A.w6_reframe.mine) || "") +
       bookBlock("일에서 원하는 것", fmtChoices("w7_next_work")) +
       bookBlock("네 가지가 만나는 곳", fmtAny("w7_ikigai")) +
+      bookBlock("AI와 곱씹어 다시 쓴 일 · 이키가이", (A.w7_reframe && A.w7_reframe.mine) || "") +
       bookBlock("3 · 7 · 10년 후의 나", fmtAny("w8_futures")) +
       bookBlock("어떻게 기억되고 싶은지", A.w8_epitaph) +
       bookBlock("나의 생의 목표", A.w8_lifegoal) +
@@ -1092,12 +1093,14 @@
       bookBlock("한 주 실험 소감", A.w10_week) +
       bookBlock("실험 결과", A.w11_result) +
       bookBlock("배운 것 · 의외인 것", A.w11_learn) +
-      bookBlock("계속할 것 / 그만둘 것", fmtAny("w11_keep")) + "</div>" +
+      bookBlock("계속할 것 / 그만둘 것", fmtAny("w11_keep")) +
+      bookBlock("AI와 곱씹어 다시 본 실험", (A.w11_reframe && A.w11_reframe.mine) || "") + "</div>" +
 
       '<div class="chapter ch10">' + chapHead("맺음", "다음 1년의 나에게", STK.heart) +
       bookBlock("3개월 돌아보기", fmtAny("w12_recap")) +
       bookBlock("다음 1년의 나에게", A.w12_next1y) +
-      bookBlock("나만의 주문", A.w12_spell) + "</div>" +
+      bookBlock("나만의 주문", A.w12_spell) +
+      bookBlock("AI와 곱씹어 본 13주 종합", (A.w12_reframe && A.w12_reframe.mine) || "") + "</div>" +
       "</section>";
     document.getElementById("app").innerHTML = html;
     window.scrollTo(0, 0);

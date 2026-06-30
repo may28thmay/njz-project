@@ -317,136 +317,49 @@ const COURSE = {
       title: "현재 지도 + 만다라트",
       chapter: "2부 · 나의 현재 지도",
       steps: [
-        { type: "intro", title: "삶을 영역으로 나눠, 하나씩 깊이",
-          body: "2부는 두 주에 걸쳐 삶을 여덟 영역으로 나눠 하나하나 들여다봐요. 평가가 아니라 '지금 어디에 있나'를 비추는 거예요. 이번 주는 토대 네 영역 — 돈·건강·일·배움. 대부분 고르기예요. 천천히, 한 영역씩." },
+        { type: "intro", title: "삶을 여덟 영역으로, 한 장의 지도",
+          body: "2부는 삶을 여덟 영역으로 나눠 들여다봐요. 평가가 아니라 '지금 어디에 있나'를 비추는 거예요. 토대(돈·건강·일·배움)와 마음·삶(마음·관계·일상·놀이) — 영역마다 지금 상태와 가장 걸리는 것만 가볍게 골라요. 맨 끝에서 여덟 영역을 레이더 한 장으로 정리해요." },
         { type: "progress", id: "prog_w4", title: "사소한 일, 이번 주는 어땠어요?" },
 
         { type: "choices", id: "w4_money_now", multi: false, title: "💰 돈·경제 — 지금 어떤가요?",
           options: ["늘 빠듯하다","들쑥날쑥하다","그럭저럭 유지된다","안정적이다","꽤 여유 있다","잘 모르겠다"] },
-        { type: "choices", id: "w4_money_mean", multi: true, allowOther: true, title: "돈이 나에게 주는 건?",
-          options: ["안정감","자유·선택지","경험·즐거움","미래 대비","사람에게 베풂","인정·자부심","시간·건강 사기"] },
         { type: "choices", id: "w4_money_gap", multi: true, allowOther: true, title: "돈에서 지금 가장 걸리는 건?",
           options: ["수입이 적다","지출 관리","빚·대출","저축이 없다","막막함·불안","계획이 없다","딱히 없다"] },
-        { type: "choices", id: "w4_money_truth", multi: false, title: "돈이 갑자기 충분해지면, 가장 먼저 바꾸고 싶은 건?",
-          options: ["일을 줄인다","사는 곳을 옮긴다","배움·경험에 쓴다","사람들과 나눈다","그냥 불안이 준다","딱히 안 바뀐다"] },
-        { type: "text", id: "w4_money_note", multiline: true, optional: true, title: "돈·경제, 한 줄로", hint: "떠오르면 한 줄. 없으면 건너뛰어요." },
 
         { type: "choices", id: "w4_body_now", multi: false, title: "💪 건강·몸 — 지금 어떤가요?",
           options: ["자주 지친다","들쑥날쑥하다","그럭저럭이다","대체로 좋다","활력 있다","잘 모르겠다"] },
-        { type: "choices", id: "w4_body_mean", multi: true, allowOther: true, title: "건강을 챙기고 싶은 이유는?",
-          options: ["일상 체력","오래 건강하게","컨디션·외모","마음 안정","하고픈 걸 하려고","아플까 봐"] },
         { type: "choices", id: "w4_body_gap", multi: true, allowOther: true, title: "몸에서 지금 가장 아쉬운 건?",
           options: ["운동 부족","수면","식습관","스트레스","통증·질환","꾸준함","딱히 없다"] },
-        { type: "choices", id: "w4_body_truth", multi: false, title: "몸이 보내는 신호를, 나는 보통?",
-          options: ["무시하고 버틴다","알지만 미룬다","바로 챙긴다","과하게 신경 쓴다","잘 못 느낀다"] },
-        { type: "text", id: "w4_body_note", multiline: true, optional: true, title: "건강·몸, 한 줄로", hint: "떠오르면 한 줄." },
 
         { type: "choices", id: "w4_work_now", multi: true, allowOther: true, title: "🧰 일·커리어 — 지금 어떤가요? (여러 개 가능)",
           options: ["잘 안 맞는다","그럭저럭이다","대체로 만족","몰입·재미있다","방향이 고민된다","쉬는 중·구직 중"] },
-        { type: "choices", id: "w4_work_mean", multi: true, allowOther: true, title: "나에게 '일'의 의미는?",
-          options: ["생계 수단","성장·배움","자아실현","인정받기","좋은 사람들","자유·자율","사회 기여"] },
         { type: "choices", id: "w4_work_gap", multi: true, allowOther: true, title: "일에서 지금 가장 걸리는 건?",
           options: ["적성·방향","성장 정체","워라밸","사람·관계","보상·대우","불안정","딱히 없다"] },
-        { type: "choices", id: "w4_work_truth", multi: false, title: "지금 일을 그만둬도 계속하고 싶은 부분이 있다면?",
-          options: ["사람들","배우고 크는 것","만드는 것 자체","인정받는 것","없다 — 쉬고 싶다","잘 모르겠다"] },
-        { type: "text", id: "w4_work_note", multiline: true, optional: true, title: "일·커리어, 한 줄로", hint: "떠오르면 한 줄." },
 
         { type: "choices", id: "w4_grow_now", multi: false, title: "📚 배움·성장 — 지금 어떤가요?",
           options: ["멈춰 있는 듯","가끔 한다","조금씩 꾸준히","활발히 성장 중","번아웃·소진","잘 모르겠다"] },
-        { type: "choices", id: "w4_grow_mean", multi: true, allowOther: true, title: "나에게 '성장'이란?",
-          options: ["새로 배우기","어제보다 나아지기","전문성","시야 넓히기","자신감","변화에 적응"] },
         { type: "choices", id: "w4_grow_gap", multi: true, allowOther: true, title: "성장에서 지금 가장 걸리는 건?",
           options: ["시간 없음","방향 모름","꾸준함","에너지","돈","딱히 없다"] },
-        { type: "choices", id: "w4_grow_truth", multi: false, title: "새로 배운다면, 나를 끄는 건?",
-          options: ["당장 쓸모 있는 것","순수한 호기심","남들이 인정하는 것","나를 바꿀 것 같은 것","함께 배우는 재미"] },
-        { type: "text", id: "w4_grow_note", multiline: true, optional: true, title: "배움·성장, 한 줄로", hint: "떠오르면 한 줄." },
-
-        { type: "promptForge", id: "w4_ai", title: "AI와 함께 곱씹기 · 토대 네 영역", reframeId: "w4_reframe", reframeHint: "AI가 비춰준 것 중 내게 진짜인 것만 남겨요.",
-          sections: ["① 한 줄","② 의외의 연결","③ 의미와 현실의 균열","④ 맹점","⑤ 한 방 가설","⑥ 작은 실험","⑦ 나에게 건네는 말"],
-          intro: "토대 네 영역(돈·건강·일·배움)에 적은 걸 모았어요. 복사해서 AI에 넣고, 돌아온 답을 아래에서 곱씹어요.",
-          system: "너는 따뜻하지만 날카로운 자기탐구 코치야. 아래 [내 기록]은 내 삶의 토대 네 영역(돈·건강·일·배움)의 현재 상태·의미·걸리는 점이야.\n\n[규칙] 내가 적은 걸 영역별로 그대로 되읽지 마(재진술 금지). 대신 영역 '사이'를 봐 — 무엇이 무엇을 떠받치고 갉아먹는지, '의미있다'와 '걸린다'의 모순, 내가 못 본 연결을 찾아. 진단·점수 금지, 지금 위치를 비추는 태도로. 가설로 구체적으로.\n\n[이 순서로 써줘]\n① 한 줄 — 네 영역을 가로지르는 지금의 나.\n② 의외의 연결 — 한 영역이 다른 영역을 떠받치거나 갉아먹는 구조 2개(예: 일에 쏟느라 건강이 빈다, 돈 불안이 배움을 막는다). 나열 말고 인과 가설로.\n③ 의미와 현실의 균열 — '의미있다'면서 '걸린다'고 한 영역. 그 균열이 뭘 말하는지.\n④ 맹점 — 내가 낮게 본 영역에 사실 있는 자원, 또는 높게 본 영역의 숨은 비용.\n⑤ 한 방 가설 — '혹시 진짜 막힌 건 이 영역이 아니라, 그걸 떠받치는 저 영역 아닐까?'\n⑥ 작은 실험 2개 — 가장 막힌 곳을 직접 건드리지 말고, 다른 영역의 힘을 빌리는 한 걸음.\n⑦ 나에게 건네는 한 문단 — 따뜻하지만 솔직하게.\n\n마지막 줄: '이건 진단이 아니라, 나를 더 잘 쓰기 위한 이해예요.'",
-          collect: [
-            { label: "돈·경제 — 현재", from: "w4_money_now" },
-            { label: "돈 — 의미", from: "w4_money_mean" },
-            { label: "돈 — 걸리는 점", from: "w4_money_gap" },
-            { label: "건강·몸 — 현재", from: "w4_body_now" },
-            { label: "건강 — 의미", from: "w4_body_mean" },
-            { label: "건강 — 아쉬운 점", from: "w4_body_gap" },
-            { label: "일·커리어 — 현재", from: "w4_work_now" },
-            { label: "일 — 의미", from: "w4_work_mean" },
-            { label: "일 — 걸리는 점", from: "w4_work_gap" },
-            { label: "배움·성장 — 현재", from: "w4_grow_now" },
-            { label: "배움 — 의미", from: "w4_grow_mean" },
-            { label: "배움 — 걸리는 점", from: "w4_grow_gap" },
-            { label: "돈 — 충분하면 가장 먼저 바꿀 것", from: "w4_money_truth" },
-            { label: "건강 — 몸 신호를 대하는 법", from: "w4_body_truth" },
-            { label: "일 — 그만둬도 계속하고 싶은 부분", from: "w4_work_truth" },
-            { label: "배움 — 나를 끄는 동기", from: "w4_grow_truth" },
-            { label: "나를 살아있게 하는 핵심 욕구 (W2)", from: "w2_core_need" },
-            { label: "나를 관통하는 가치 (W1)", from: "w1_journey" }
-          ] },
-        { type: "manifest", id: "manifest_w4", title: "이번 주의 미래 그리기 · 감사",
-          prompt: "그 미래가 이미 이뤄졌다고 느껴봐요. 그래서 지금, 고마운 것 하나는?" }
-      ],
-      meetup: {
-        discuss: [
-          "토대 네 영역 중, 지금 가장 마음이 가는 영역은? 이유는?",
-          "'의미 있다'고 한 것과 '걸린다'고 한 것 — 부딪히는 데가 있었나요?"
-        ],
-        activity: [
-          "각자 가장 걸리는 영역 하나를 꺼내고, 나머지가 '아주 작은 한 걸음'을 하나씩 보태줘요.",
-          "다음 주는 마음·관계·일상·놀이 — 살아가는 결을 들여다봐요."
-        ]
-      }
-    },
-    {
-      id: "w4b", no: 5, badge: "5주차",
-      title: "마음·삶 네 영역 + 레이더",
-      chapter: "2부 · 나의 현재 지도",
-      steps: [
-        { type: "intro", title: "이번엔 마음·삶의 결을",
-          body: "지난주 토대 네 영역에 이어, 이번 주는 마음·관계·일상·놀이를 들여다봐요. 그리고 맨 끝에서, 여덟 영역 전체를 레이더 한 장으로 정리해요. 깊이 들여다본 뒤라 더 또렷할 거예요." },
-        { type: "progress", id: "prog_w4b", title: "사소한 일, 이번 주는 어땠어요?" },
 
         { type: "choices", id: "w4b_mind_now", multi: true, allowOther: true, title: "🌿 마음·정서 — 요즘 어떤가요? (여러 개 가능)",
           options: ["자주 불안·지친다","오르락내리락한다","대체로 평온하다","단단하다","공허·무기력하다","잘 모르겠다"] },
-        { type: "choices", id: "w4b_mind_mean", multi: true, allowOther: true, title: "요즘 나를 기분 좋게 하는 건?",
-          options: ["쉼·여유","사람·대화","성취감","자연·산책","좋아하는 것","혼자만의 시간","몸 움직이기"] },
         { type: "choices", id: "w4b_mind_gap", multi: true, allowOther: true, title: "요즘 나를 가장 괴롭히는 마음은?",
           options: ["불안·걱정","번아웃·무기력","외로움","자기비판","조급함","분노·짜증","공허함","딱히 없다"] },
-        { type: "choices", id: "w4b_mind_truth", multi: false, title: "혼자 가만히 있을 때, 마음에 가장 자주 올라오는 건?",
-          options: ["걱정·생각","평온·쉼","공허·심심함","해야 할 일","그리움·외로움","잘 모르겠다"] },
-        { type: "text", id: "w4b_mind_note", multiline: true, optional: true, title: "마음·정서, 한 줄로", hint: "떠오르면 한 줄." },
 
         { type: "choices", id: "w4b_rel_now", multi: true, allowOther: true, title: "🤝 관계 — 지금 어떤가요? (여러 개 가능)",
           options: ["외롭다","좁지만 깊다","넓지만 얕다","대체로 충만하다","정리가 필요하다","잘 모르겠다"] },
-        { type: "choices", id: "w4b_rel_who", multi: true, allowOther: true, title: "요즘 가장 많이 이어져 있는 사람은?",
-          options: ["가족","연인·배우자","친구","동료","온라인·커뮤니티","혼자가 편하다"] },
         { type: "choices", id: "w4b_rel_gap", multi: true, allowOther: true, title: "관계에서 지금 가장 아쉬운 건?",
           options: ["깊은 대화 부족","자주 못 본다","갈등·서운함","새 인연이 없다","혼자 시간 부족","의지할 사람 부족","딱히 없다"] },
-        { type: "choices", id: "w4b_rel_truth", multi: false, title: "힘든 일이 생기면, 가장 먼저 떠오르는 사람은?",
-          options: ["가족","연인·배우자","오랜 친구","요즘 자주 보는 사람","아무도 — 혼자 삭인다","상황마다 다르다"] },
-        { type: "text", id: "w4b_rel_note", multiline: true, optional: true, title: "관계, 한 줄로", hint: "떠오르면 한 줄." },
 
         { type: "choices", id: "w4b_life_now", multi: true, allowOther: true, title: "🏠 일상·공간 — 지금 어떤가요? (여러 개 가능)",
           options: ["불규칙·정신없다","그럭저럭이다","대체로 안정적","마음에 든다","답답하다","잘 모르겠다"] },
-        { type: "choices", id: "w4b_life_mean", multi: true, allowOther: true, title: "나에게 편안한 일상이란?",
-          options: ["규칙적 리듬","깔끔한 공간","나만의 시간","적당한 여백","좋아하는 물건","조용함","활기"] },
         { type: "choices", id: "w4b_life_gap", multi: true, allowOther: true, title: "일상에서 지금 가장 바꾸고 싶은 건?",
           options: ["수면·기상 패턴","집·공간","정리·청소","식사 리듬","스크린 타임","여백 부족","딱히 없다"] },
-        { type: "choices", id: "w4b_life_truth", multi: false, title: "하루 중 '이 시간이 나답다' 싶은 순간은?",
-          options: ["아침 혼자","집중해 일할 때","쉬는 저녁","자기 전","사람들과 있을 때","딱히 없다"] },
-        { type: "text", id: "w4b_life_note", multiline: true, optional: true, title: "일상·공간, 한 줄로", hint: "떠오르면 한 줄." },
 
         { type: "choices", id: "w4b_play_now", multi: false, title: "🎈 놀이·쉼 — 요즘 어떤가요?",
           options: ["거의 못 챙긴다","가끔이다","그럭저럭이다","잘 챙긴다","과한 듯하다","잘 모르겠다"] },
-        { type: "choices", id: "w4b_play_mean", multi: true, allowOther: true, title: "나에게 '쉼·재미'란?",
-          options: ["충전","새 경험","취미 몰입","사람과 어울림","아무것도 안 하기","여행·떠나기","웃음"] },
         { type: "choices", id: "w4b_play_gap", multi: true, allowOther: true, title: "쉼·재미에서 지금 가장 아쉬운 건?",
           options: ["시간 없음","돈","같이 할 사람","뭘 할지 모름","죄책감·눈치","에너지","딱히 없다"] },
-        { type: "choices", id: "w4b_play_truth", multi: false, title: "마음껏 놀아도 된다면, 가장 하고 싶은 건?",
-          options: ["여행·떠나기","푹 쉬기","새 취미","사람들과 어울림","아무것도 안 하기","모르겠다 — 그게 문제"] },
-        { type: "text", id: "w4b_play_note", multiline: true, optional: true, title: "놀이·쉼, 한 줄로", hint: "떠오르면 한 줄." },
 
         { type: "intro", title: "이제, 여덟 영역을 한 장으로",
           body: "여덟 영역을 다 들여다봤어요. 이제 각 영역이 '지금 얼마나 채워져 있는지' 직감으로 골라요. 고르는 대로 아래 레이더가 그려져요. 깊이 본 뒤라, 이 한 장이 지금의 나를 또렷이 비춰줄 거예요." },
@@ -487,9 +400,17 @@ const COURSE = {
           options: ["한쪽으로 많이 쏠려 있다","대체로 고르다","전반적으로 낮다","몇 곳만 높다"] },
         { type: "promptForge", id: "w4b_ai", title: "AI와 함께 곱씹기 · 현재 지도 종합", reframeId: "w4b_reframe", reframeHint: "AI가 비춰준 것 중 내게 진짜인 것만 남겨요.",
           sections: ["① 한 줄","② 의외의 발견","③ 채우고 싶은 영역의 진실","④ 맹점","⑤ 한 방 가설","⑥ 작은 실험","⑦ 나에게 건네는 말"],
-          intro: "마음·삶 네 영역과 여덟 영역 레이더를 모아, AI에게 현재 지도를 종합해 물어봐요. 복사해서 돌려보고 아래에서 곱씹어요.",
-          system: "너는 따뜻하지만 날카로운 자기탐구 코치야. 아래 [내 기록]은 내 삶 여덟 영역(돈·건강·일·배움·마음·관계·일상·놀이)을 들여다본 결과 — 마음·관계·일상·놀이의 현재·의미·아쉬운 점, 여덟 영역 0~10 레이더 점수, 가장 채우고 싶은 영역이야.\n\n[규칙] 점수를 영역별로 그대로 되읽지 마(재진술 금지). 레이더의 '모양'과 영역들 '사이'를 봐 — 쏠림이 만든 패턴, 높은 곳과 낮은 곳의 인과, 내가 못 본 것. 낮은 점수는 나쁜 게 아니라 지금 위치. 가설로 구체적으로. 특히 '현재'와 '원하는' 점수의 격차가 큰 영역을 먼저 짚고, 그 격차가 내 진짜 바람인지 남의 기준·의무감인지 가설로 구분해줘.\n\n[이 순서로 써줘]\n① 한 줄 — 레이더 모양이 그리는 지금의 나.\n② 의외의 발견 — 같이 높거나 같이 낮은 영역 묶음과, 그게 드러내는 삶의 구조(예: 일·돈은 높은데 관계·놀이가 비었다 = 무엇을 위해 무엇을 미뤘나). 인과 가설로.\n③ '채우고 싶은 영역'의 진실 — 내가 채우고 싶다 한 곳이 실제로 낮은 곳인지, 이미 신경 쓰는 곳인지. 그 선택이 뭘 말하는지.\n④ 맹점 — 점수는 낮지만 사실 힘이 되는 영역, 또는 높지만 대가를 치르는 영역.\n⑤ 한 방 가설 — '혹시 진짜 채워야 할 건, 채우고 싶다고 한 그곳이 아닐 수도 있지 않을까?'\n⑥ 작은 실험 2개 — 높은 영역의 힘을 빈 영역으로 흘려보내는 구체적 한 걸음.\n⑦ 나에게 건네는 한 문단 — 따뜻하지만 솔직하게.\n\n마지막 줄: '이건 진단이 아니라, 나를 더 잘 쓰기 위한 이해예요.'",
+          intro: "토대(돈·건강·일·배움)와 마음·삶(마음·관계·일상·놀이) 여덟 영역을 모두 모아, AI에게 현재 지도를 종합해 물어봐요. 복사해서 돌려보고 아래에서 곱씹어요.",
+          system: "너는 따뜻하지만 날카로운 자기탐구 코치야. 아래 [내 기록]은 내 삶 여덟 영역(돈·건강·일·배움·마음·관계·일상·놀이)을 들여다본 결과 — 영역별 지금 상태와 가장 걸리는 점, 여덟 영역 0~10 레이더 점수(지금/원하는), 가장 채우고 싶은 영역이야.\n\n[규칙] 점수를 영역별로 그대로 되읽지 마(재진술 금지). 레이더의 '모양'과 영역들 '사이'를 봐 — 쏠림이 만든 패턴, 높은 곳과 낮은 곳의 인과, 내가 못 본 것. 낮은 점수는 나쁜 게 아니라 지금 위치. 가설로 구체적으로. 특히 '현재'와 '원하는' 점수의 격차가 큰 영역을 먼저 짚고, 그 격차가 내 진짜 바람인지 남의 기준·의무감인지 가설로 구분해줘.\n\n[이 순서로 써줘]\n① 한 줄 — 레이더 모양이 그리는 지금의 나.\n② 의외의 발견 — 같이 높거나 같이 낮은 영역 묶음과, 그게 드러내는 삶의 구조(예: 일·돈은 높은데 관계·놀이가 비었다 = 무엇을 위해 무엇을 미뤘나). 인과 가설로.\n③ '채우고 싶은 영역'의 진실 — 내가 채우고 싶다 한 곳이 실제로 낮은 곳인지, 이미 신경 쓰는 곳인지. 그 선택이 뭘 말하는지.\n④ 맹점 — 점수는 낮지만 사실 힘이 되는 영역, 또는 높지만 대가를 치르는 영역.\n⑤ 한 방 가설 — '혹시 진짜 채워야 할 건, 채우고 싶다고 한 그곳이 아닐 수도 있지 않을까?'\n⑥ 작은 실험 2개 — 높은 영역의 힘을 빈 영역으로 흘려보내는 구체적 한 걸음.\n⑦ 나에게 건네는 한 문단 — 따뜻하지만 솔직하게.\n\n마지막 줄: '이건 진단이 아니라, 나를 더 잘 쓰기 위한 이해예요.'",
           collect: [
+            { label: "돈·경제 — 현재", from: "w4_money_now" },
+            { label: "돈 — 걸리는 점", from: "w4_money_gap" },
+            { label: "건강·몸 — 현재", from: "w4_body_now" },
+            { label: "건강 — 아쉬운 점", from: "w4_body_gap" },
+            { label: "일·커리어 — 현재", from: "w4_work_now" },
+            { label: "일 — 걸리는 점", from: "w4_work_gap" },
+            { label: "배움·성장 — 현재", from: "w4_grow_now" },
+            { label: "배움 — 걸리는 점", from: "w4_grow_gap" },
             { label: "마음·정서 — 현재", from: "w4b_mind_now" },
             { label: "마음 — 괴롭히는 것", from: "w4b_mind_gap" },
             { label: "관계 — 현재", from: "w4b_rel_now" },
@@ -502,11 +423,8 @@ const COURSE = {
             { label: "여덟 영역 '원하는' 수준(0~10·높을수록 더 바람)", from: "w4_want" },
             { label: "가장 채우고 싶은 영역", from: "w4_fill" },
             { label: "레이더로 본 균형", from: "w4_balance" },
-            { label: "마음 — 혼자일 때 올라오는 것", from: "w4b_mind_truth" },
-            { label: "관계 — 힘들 때 떠오르는 사람", from: "w4b_rel_truth" },
-            { label: "일상 — 나다운 시간", from: "w4b_life_truth" },
-            { label: "놀이 — 마음껏 놀면 하고 싶은 것", from: "w4b_play_truth" },
-            { label: "나를 살아있게 하는 핵심 욕구 (W2)", from: "w2_core_need" }
+            { label: "나를 살아있게 하는 핵심 욕구 (W2)", from: "w2_core_need" },
+            { label: "나를 관통하는 가치 (W1)", from: "w1_journey" }
           ] },
         { type: "mandala", id: "w4_mandala", title: "채우고 싶은 영역 만다라트",
           centerLabel: "지금 가장 채우고 싶은 영역",
@@ -526,7 +444,7 @@ const COURSE = {
       }
     },
     {
-      id: "w5", no: 6, badge: "6주차",
+      id: "w5", no: 5, badge: "5주차",
       title: "마음 · 라이프스타일",
       chapter: "3부 · 내가 원하는 것",
       steps: [
@@ -586,7 +504,7 @@ const COURSE = {
       }
     },
     {
-      id: "w6", no: 7, badge: "7주차",
+      id: "w6", no: 6, badge: "6주차",
       title: "관계 · 도전",
       chapter: "3부 · 내가 원하는 것",
       steps: [
@@ -639,7 +557,7 @@ const COURSE = {
       }
     },
     {
-      id: "w7", no: 8, badge: "8주차",
+      id: "w7", no: 7, badge: "7주차",
       title: "일 · 성장 · 네 가지가 만나는 곳",
       chapter: "3부 · 내가 원하는 것",
       steps: [
@@ -682,7 +600,7 @@ const COURSE = {
       }
     },
     {
-      id: "w8", no: 9, badge: "9주차",
+      id: "w8", no: 8, badge: "8주차",
       title: "궁극의 질문 · 우선순위",
       chapter: "3부 · 내가 원하는 것",
       steps: [
@@ -734,7 +652,7 @@ const COURSE = {
       }
     },
     {
-      id: "w9", no: 10, badge: "10주차",
+      id: "w9", no: 9, badge: "9주차",
       title: "비전 · 작은 실험 설계",
       chapter: "4부 · 나의 실험",
       steps: [
@@ -763,7 +681,7 @@ const COURSE = {
       }
     },
     {
-      id: "w10", no: 11, badge: "11주차",
+      id: "w10", no: 10, badge: "10주차",
       title: "실험 실행 주간",
       chapter: "4부 · 나의 실험",
       steps: [
@@ -793,7 +711,7 @@ const COURSE = {
       }
     },
     {
-      id: "w11", no: 12, badge: "12주차",
+      id: "w11", no: 11, badge: "11주차",
       title: "실험 회고 · 책 점검",
       chapter: "4부 · 나의 실험",
       steps: [
@@ -834,7 +752,7 @@ const COURSE = {
       }
     },
     {
-      id: "w12", no: 13, badge: "13주차",
+      id: "w12", no: 12, badge: "12주차",
       title: "완성 · 맺음",
       chapter: "맺음",
       steps: [

@@ -414,7 +414,8 @@
       '<div class="rowbtn"><a class="btn big" href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.linkLabel || "검사하러 가기") + " ↗</a></div>" +
       '<label class="rfield"><span>검사 결과 페이지 전체를 복사해 붙여넣기</span>' +
       '<textarea id="' + s.id + '_raw" rows="6" placeholder="결과지 전체(영역·세부 항목·점수)를 그대로 붙여넣어요.">' + esc(d.raw || "") + "</textarea></label>" +
-      '<div class="rowbtn"><button class="btn" onclick="setBig5(\'' + s.id + '\')">분석하기</button>' +
+      (hasResult ? "" : '<p class="hint">붙여넣은 뒤, 아래 <b>\'결과 분석하기\'</b> 버튼을 꼭 눌러야 점수가 정리돼요.</p>') +
+      '<div class="rowbtn"><button class="btn" onclick="setBig5(\'' + s.id + '\')">결과 분석하기 →</button>' +
       (hasResult ? ' <button class="btn ghost" onclick="clearBig5(\'' + s.id + '\')">지우기</button>' : "") + "</div>";
     if (!hasResult) return out;
     var items = s.domains.map(function (x) { return x.key; });
@@ -585,7 +586,8 @@
     var v = A[id];
     if (v == null) return "";
     if (typeof v === "string") return v;
-    if (v.domains && typeof v.domains === "object" && Object.keys(v.domains).length) {
+    if (v.domains !== undefined && v.facets !== undefined) {
+      if (!v.domains || !Object.keys(v.domains).length) return "";
       var dl = Object.keys(v.domains).map(function (k) { var x = v.domains[k]; return k + " " + (B5_LVL_KO[x.level] || "") + "(" + x.score + "/120)"; }).join(", ");
       var ex = [];
       if (v.facets) Object.keys(v.facets).forEach(function (f) { var x = v.facets[f]; if (x.level === "high" || x.level === "low") ex.push(f + " " + x.score + "(" + (B5_LVL_KO[x.level] || "") + ")"); });
